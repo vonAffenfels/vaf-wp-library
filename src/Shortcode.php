@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection PhpUnused */
+
 namespace VAF\WP\Library;
 
 abstract class Shortcode

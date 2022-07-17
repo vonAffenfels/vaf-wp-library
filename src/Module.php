@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection PhpUnused */
+
 /**
  * @package vaf-wp-library
  */
