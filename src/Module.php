@@ -6,6 +6,8 @@
 
 namespace VAF\WP\Library;
 
+use InvalidArgumentException;
+
 abstract class Module
 {
     private Plugin $plugin;
@@ -14,6 +16,7 @@ abstract class Module
      * Registers hooks for this specific module
      *
      * @return $this
+     * @throws InvalidArgumentException
      */
     final public function register(): Module
     {
@@ -26,7 +29,7 @@ abstract class Module
                 }
             } elseif (is_array($callback)) {
                 if (!isset($callback['callback'])) {
-                    throw new \InvalidArgumentException('Missing callback function!');
+                    throw new InvalidArgumentException('Missing callback function!');
                 }
                 $method = $callback['callback'];
                 $priority = $callback['priority'] ?? 10;
@@ -38,6 +41,10 @@ abstract class Module
                     $priority,
                     $arguments
                 );
+            } elseif (is_callable($callback)) {
+                add_filter($hook, $callback);
+            } else {
+                throw new InvalidArgumentException('Expecting a string, array or callback as a hook function!');
             }
         }
 

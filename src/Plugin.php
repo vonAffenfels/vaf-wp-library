@@ -1,10 +1,14 @@
 <?php
 
+/** @noinspection PhpUnused */
+
 /**
  * @package vaf-wp-library
  */
 
 namespace VAF\WP\Library;
+
+use InvalidArgumentException;
 
 abstract class Plugin
 {
@@ -16,13 +20,20 @@ abstract class Plugin
     private array $modules = [];
 
     /**
+     * List of registered shortcodes
+     *
+     * @var Shortcode[]
+     */
+    private array $shortcodes = [];
+
+    /**
      * Plugin instance
      *
      * @var Plugin|null
      */
     private static ?Plugin $instance = null;
 
-    final private function __contruct()
+    final protected function __contruct()
     {
         $this->initPlugin();
     }
@@ -51,6 +62,7 @@ abstract class Plugin
      *
      * @param string $classname
      * @return $this
+     * @throws InvalidArgumentException
      */
     final protected function registerModule(string $classname): Plugin
     {
@@ -60,10 +72,39 @@ abstract class Plugin
             return $this;
         }
 
+        if (!is_subclass_of($classname, 'VAF\WP\Library\Module')) {
+            throw new InvalidArgumentException('Module must inherit VAF\WP\Library\Module!');
+        }
+
         /** @var Module $module */
         $module = new $classname();
         $module->setPlugin($this);
         $module->register();
+
+        return $this;
+    }
+
+    final protected function registerShortcode(string $classname): Plugin
+    {
+        // If we already have the shortcode class registered
+        // we don't want to do it again
+        if (isset($this->shortcodes[$classname])) {
+            return $this;
+        }
+
+        if (!is_subclass_of($classname, 'VAF\WP\Library\Shortcode')) {
+            throw new InvalidArgumentException('Shortcode must inherit VAF\WP\Library\Shortcode');
+        }
+
+        /** @var Shortcode $shortcode */
+        $shortcode = new $classname();
+        $shortcode->setPlugin($this);
+        add_shortcode(
+            $shortcode->getShortcode(),
+            function (array $attributes, ?string $content, string $tag) use ($shortcode): string {
+                return $shortcode->callback($attributes, $content, $tag);
+            }
+        );
 
         return $this;
     }
