@@ -41,8 +41,6 @@ abstract class Plugin
 
     /**
      * Function is called when the plugin starts and is initialized
-     *
-     * @return Plugin
      */
-    abstract protected function initPlugin(): self;
+    abstract protected function initPlugin(): void;
 }
