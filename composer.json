@@ -14,7 +14,12 @@
     "issues": "https://github.com/vonAffenfels/vaf-wp-library/issues"
   },
   "keywords": [
-    "composer", "wordpress", "wp", "vonaffenfels", "vaf", "library"
+    "composer",
+    "wordpress",
+    "wp",
+    "vonaffenfels",
+    "vaf",
+    "library"
   ],
   "config": {
     "optimize-autoloader": true,

@@ -11,3 +11,4 @@ auth.json
 
 # Misc
 .DS_Store
+.phpdoc
