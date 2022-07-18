@@ -6,19 +6,16 @@ namespace VAF\WP\Library\Traits;
 
 use VAF\WP\Library\AdminPages\AbstractAdminPage;
 use VAF\WP\Library\AdminPages\PageWithChildren;
-use VAF\WP\Library\Traits\Internal\HasPlugin;
 use VAF\WP\Library\Traits\Internal\HasTemplates;
 
 trait HasAdminPages
 {
-    use HasPlugin;
     use HasTemplates;
 
     final protected function startAdminPages(): void
     {
         add_filter('admin_menu', function () {
             $adminPage = $this->getAdminPage();
-            $adminPage->setPlugin($this->getPlugin());
 
             $slug = $this->getSlugNamespace() . '-' . $adminPage->getSlug();
 
@@ -36,8 +33,6 @@ trait HasAdminPages
 
             if ($adminPage instanceof PageWithChildren) {
                 foreach ($adminPage->getChildren() as $child) {
-                    $child->setPlugin($this->getPlugin());
-
                     add_submenu_page(
                         $slug,
                         $child->getPageTitle(),

@@ -2,12 +2,8 @@
 
 namespace VAF\WP\Library\AdminPages;
 
-use VAF\WP\Library\Traits\Internal\HasPlugin;
-
 abstract class AbstractAdminPage
 {
-    use HasPlugin;
-
     private string $pageTitle;
     private string $menuTitle;
     private string $slug;
@@ -15,6 +11,15 @@ abstract class AbstractAdminPage
     private string $icon;
     private ?int $position;
 
+    /**
+     * @param string $pageTitle
+     * @param string $menuTitle
+     * @param string $capability
+     * @param string|null $slug
+     * @param string $icon
+     * @param int|null $position
+     * @return void
+     */
     final public function __constructor(
         string $pageTitle,
         string $menuTitle,
