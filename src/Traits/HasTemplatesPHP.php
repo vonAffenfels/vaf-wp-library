@@ -16,7 +16,7 @@ trait HasTemplatesPHP
     final protected function startTemplatesPHP(): void
     {
         $this->templatePaths = array_merge($this->getTemplateDirectories(), [
-            trailingslashit(realpath(dirname(__FILE__) . '/../../templates'))
+            trailingslashit(realpath(dirname(__FILE__) . '/../../templatesPhp'))
         ]);
     }
 
