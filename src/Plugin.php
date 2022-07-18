@@ -25,6 +25,7 @@ abstract class Plugin
         $this->startTrait('modules');
         $this->startTrait('shortcodes');
         $this->startTrait('restAPI');
+        $this->startTrait('templatesPHP');
     }
 
     final public function getPluginFile(): string
