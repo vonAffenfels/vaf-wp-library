@@ -20,7 +20,7 @@ abstract class AbstractFeature
 
     final public static function getInstance(): self
     {
-        if (is_null(static::$instances[static::class])) {
+        if (is_null(static::$instances[static::class] ?? null)) {
             static::$instances[static::class] = new static();
         }
 
