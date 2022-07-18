@@ -23,7 +23,7 @@ trait HasTemplatesPHP
     final private function getTemplateFile(string $template): ?string
     {
         foreach (array_reverse($this->templatePaths) as $templatePath) {
-            $templateFile = $templatePath . $template . '.php';
+            $templateFile = trailingslashit($templatePath) . $template . '.php';
             if (file_exists($templateFile)) {
                 return $templateFile;
             }
