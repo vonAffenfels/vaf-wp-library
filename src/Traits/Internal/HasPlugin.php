@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection PhpUnused */
+
 namespace VAF\WP\Library\Traits\Internal;
 
 use VAF\WP\Library\Plugin;
