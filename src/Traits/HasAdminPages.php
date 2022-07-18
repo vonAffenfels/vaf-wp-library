@@ -6,6 +6,7 @@ namespace VAF\WP\Library\Traits;
 
 use VAF\WP\Library\AdminPages\AbstractAdminPage;
 use VAF\WP\Library\AdminPages\PageWithChildren;
+use VAF\WP\Library\Plugin;
 use VAF\WP\Library\Traits\Internal\HasTemplates;
 
 trait HasAdminPages

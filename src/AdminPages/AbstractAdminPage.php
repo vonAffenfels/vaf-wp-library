@@ -2,8 +2,13 @@
 
 namespace VAF\WP\Library\AdminPages;
 
+use VAF\WP\Library\Plugin;
+use VAF\WP\Library\Traits\Internal\HasPlugin;
+
 abstract class AbstractAdminPage
 {
+    use HasPlugin;
+
     private string $pageTitle;
     private string $menuTitle;
     private string $slug;
@@ -12,6 +17,7 @@ abstract class AbstractAdminPage
     private ?int $position;
 
     /**
+     * @param Plugin $plugin
      * @param string $pageTitle
      * @param string $menuTitle
      * @param string $capability
@@ -21,6 +27,7 @@ abstract class AbstractAdminPage
      * @return void
      */
     public function __construct(
+        Plugin $plugin,
         string $pageTitle,
         string $menuTitle,
         string $capability,
@@ -28,6 +35,8 @@ abstract class AbstractAdminPage
         string $icon = '',
         ?int $position = null
     ) {
+        $this->setPlugin($plugin);
+
         $this->pageTitle = $pageTitle;
         $this->menuTitle = $menuTitle;
         $this->slug = $slug ?? sanitize_key($pageTitle);
@@ -36,32 +45,32 @@ abstract class AbstractAdminPage
         $this->capability = $capability;
     }
 
-    public function getPageTitle(): string
+    final public function getPageTitle(): string
     {
         return $this->pageTitle;
     }
 
-    public function getMenuTitle(): string
+    final public function getMenuTitle(): string
     {
         return $this->menuTitle;
     }
 
-    public function getSlug(): string
+    final public function getSlug(): string
     {
         return $this->slug;
     }
 
-    public function getIcon(): string
+    final public function getIcon(): string
     {
         return $this->icon;
     }
 
-    public function getPosition(): ?int
+    final public function getPosition(): ?int
     {
         return $this->position;
     }
 
-    public function getCapability(): string
+    final public function getCapability(): string
     {
         return $this->capability;
     }
