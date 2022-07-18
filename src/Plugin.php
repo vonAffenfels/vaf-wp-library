@@ -21,6 +21,7 @@ abstract class Plugin
 
         $this->initPlugin();
 
+        $this->startTrait('pluginCommunication');
         $this->startTrait('modules');
         $this->startTrait('shortcodes');
         $this->startTrait('restAPI');
