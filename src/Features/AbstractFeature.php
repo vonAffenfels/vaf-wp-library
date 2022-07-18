@@ -20,11 +20,11 @@ abstract class AbstractFeature
 
     final public static function getInstance(): self
     {
-        if (is_null(self::$instance)) {
-            self::$instance = new static();
+        if (is_null(static::$instance)) {
+            static::$instance = new static();
         }
 
-        return self::$instance;
+        return static::$instance;
     }
 
     final public function setPlugin(Plugin $plugin): self
