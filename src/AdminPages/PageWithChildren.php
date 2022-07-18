@@ -2,6 +2,8 @@
 
 namespace VAF\WP\Library\AdminPages;
 
+use InvalidArgumentException;
+
 class PageWithChildren extends AbstractAdminPage
 {
     private array $children = [];
@@ -9,7 +11,7 @@ class PageWithChildren extends AbstractAdminPage
     public function registerChild(AbstractAdminPage $child): self
     {
         if ($child instanceof PageWithChildren) {
-            throw new \InvalidArgumentException('Cannot have admin pages with multiple levels (only one submenu is allowed)');
+            throw new InvalidArgumentException('Cannot have admin pages with multiple levels (only one submenu is allowed)');
         }
 
         $this->children[] = $child;

@@ -2,20 +2,22 @@
 
 /** @noinspection PhpUnused */
 
-namespace VAF\WP\Library\Traits;
+namespace VAF\WP\Library\Features;
 
 use Exception;
-use VAF\WP\Library\Traits\Internal\HasTemplates;
+use VAF\WP\Library\Plugin;
 
-trait HasTemplatesPHP
+final class TemplatesPHP extends AbstractFeature
 {
-    use HasTemplates;
+    public const FEATURE_NAME = 'templates';
 
     private array $templatePaths = [];
 
-    final protected function startTemplatesPHP(): void
+    final public function __construct(Plugin $plugin, array $templateDirectories)
     {
-        $this->templatePaths = array_merge($this->getTemplateDirectories(), [
+        $this->setPlugin($plugin);
+
+        $this->templatePaths = array_merge($templateDirectories, [
             trailingslashit(realpath(dirname(__FILE__) . '/../../templatesPhp'))
         ]);
     }
@@ -33,14 +35,6 @@ trait HasTemplatesPHP
     }
 
     /**
-     * Should return an array with all paths where to look for templates
-     * (in reversed priority order - most important directory as last)
-     *
-     * @return array
-     */
-    abstract protected function getTemplateDirectories(): array;
-
-    /**
      * @throws Exception
      */
     final public function renderTemplate(string $template, array $context = []): string
@@ -54,5 +48,10 @@ trait HasTemplatesPHP
         ob_start();
         include($templateFile);
         return ob_get_clean();
+    }
+
+    final public function getName(): string
+    {
+        return self::FEATURE_NAME;
     }
 }

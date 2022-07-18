@@ -2,14 +2,16 @@
 
 /** @noinspection PhpUnused */
 
-namespace VAF\WP\Library\Traits;
+namespace VAF\WP\Library\Features;
 
 use InvalidArgumentException;
 use VAF\WP\Library\Plugin;
 use VAF\WP\Library\Shortcode;
 
-trait HasShortcodes
+final class Shortcodes extends AbstractFeature
 {
+    public const FEATURE_NAME = 'shortcodes';
+
     /**
      * List of registered shortcodes
      *
@@ -17,9 +19,11 @@ trait HasShortcodes
      */
     private array $shortcodes = [];
 
-    final protected function startShortcodes(): void
+    final public function __construct(Plugin $plugin, array $shortcodes)
     {
-        foreach ($this->getShortcodes() as $shortcode) {
+        $this->setPlugin($plugin);
+
+        foreach ($shortcodes as $shortcode) {
             $this->registerShortcode($shortcode);
         }
     }
@@ -38,9 +42,7 @@ trait HasShortcodes
 
         /** @var Shortcode $shortcode */
         $shortcode = new $classname();
-
-        /** @var Plugin $this */
-        $shortcode->setPlugin($this);
+        $shortcode->setPlugin($this->getPlugin());
 
         add_shortcode(
             $shortcode->getShortcode(),
@@ -50,5 +52,8 @@ trait HasShortcodes
         );
     }
 
-    abstract protected function getShortcodes(): array;
+    final public function getName(): string
+    {
+        return self::FEATURE_NAME;
+    }
 }

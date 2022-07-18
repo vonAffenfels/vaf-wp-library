@@ -4,7 +4,7 @@
 
 namespace VAF\WP\Library;
 
-use VAF\WP\Library\Traits\Internal\HasPlugin;
+use VAF\WP\Library\Traits\HasPlugin;
 
 abstract class Shortcode
 {

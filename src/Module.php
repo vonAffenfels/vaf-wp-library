@@ -9,7 +9,7 @@
 namespace VAF\WP\Library;
 
 use InvalidArgumentException;
-use VAF\WP\Library\Traits\Internal\HasPlugin;
+use VAF\WP\Library\Traits\HasPlugin;
 
 abstract class Module
 {

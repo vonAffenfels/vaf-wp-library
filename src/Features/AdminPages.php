@@ -2,23 +2,20 @@
 
 /** @noinspection PhpUnused */
 
-namespace VAF\WP\Library\Traits;
+namespace VAF\WP\Library\Features;
 
 use VAF\WP\Library\AdminPages\AbstractAdminPage;
 use VAF\WP\Library\AdminPages\PageWithChildren;
 use VAF\WP\Library\Plugin;
-use VAF\WP\Library\Traits\Internal\HasTemplates;
 
-trait HasAdminPages
+final class AdminPages extends AbstractFeature
 {
-    use HasTemplates;
+    public const FEATURE_NAME = 'adminPages';
 
-    final protected function startAdminPages(): void
+    final public function __construct(Plugin $plugin, AbstractAdminPage $adminPage)
     {
-        add_filter('admin_menu', function () {
-            $adminPage = $this->getAdminPage();
-
-            $slug = $this->getSlugNamespace() . '-' . $adminPage->getSlug();
+        add_filter('admin_menu', function () use ($adminPage) {
+            $slug = $this->getPlugin()->getPluginName() . '-' . $adminPage->getSlug();
 
             add_menu_page(
                 $adminPage->getPageTitle(),
@@ -50,7 +47,8 @@ trait HasAdminPages
         });
     }
 
-    abstract protected function getAdminPage(): AbstractAdminPage;
-
-    abstract protected function getSlugNamespace(): string;
+    final public function getName(): string
+    {
+        return self::FEATURE_NAME;
+    }
 }

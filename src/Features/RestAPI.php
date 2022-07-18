@@ -1,19 +1,21 @@
 <?php
 
 /**
- * @noinspection PhpUnusedParameterInspection
  * @noinspection PhpUnused
+ * @noinspection PhpUnusedParameterInspection
  */
 
-namespace VAF\WP\Library\Traits;
+namespace VAF\WP\Library\Features;
 
 use InvalidArgumentException;
 use VAF\WP\Library\Plugin;
 use VAF\WP\Library\RestRoute;
 use WP_REST_Request;
 
-trait HasRestAPI
+final class RestAPI extends AbstractFeature
 {
+    public const FEATURE_NAME = 'restAPI';
+
     /**
      * List of registered rest routes
      *
@@ -21,13 +23,26 @@ trait HasRestAPI
      */
     private array $restRoutes = [];
 
-    final protected function startRestAPI(): void
+    /**
+     * @var string
+     */
+    private string $restNamespace;
+
+    final public function __construct(Plugin $plugin, string $restNamespace, array $restRoutes)
     {
-        add_filter('rest_api_init', function () {
-            foreach ($this->getRestRoutes() as $route) {
+        $this->restNamespace = $restNamespace;
+        $this->setPlugin($plugin);
+
+        add_filter('rest_api_init', function () use ($restRoutes) {
+            foreach ($restRoutes as $route) {
                 $this->registerRestRoute($route);
             }
         });
+    }
+
+    final public function getRestNamespace(): string
+    {
+        return $this->restNamespace;
     }
 
     final private function registerRestRoute(string $classname): void
@@ -44,9 +59,7 @@ trait HasRestAPI
 
         /** @var RestRoute $route */
         $route = new $classname();
-
-        /** @var Plugin $this */
-        $route->setPlugin($this);
+        $route->setPlugin($this->getPlugin());
 
         register_rest_route(
             $this->getRestNamespace(),
@@ -104,7 +117,8 @@ trait HasRestAPI
         return $return;
     }
 
-    abstract protected function getRestRoutes(): array;
-
-    abstract public function getRestNamespace(): string;
+    final public function getName(): string
+    {
+        return self::FEATURE_NAME;
+    }
 }

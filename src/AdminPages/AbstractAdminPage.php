@@ -3,7 +3,7 @@
 namespace VAF\WP\Library\AdminPages;
 
 use VAF\WP\Library\Plugin;
-use VAF\WP\Library\Traits\Internal\HasPlugin;
+use VAF\WP\Library\Traits\HasPlugin;
 
 abstract class AbstractAdminPage
 {

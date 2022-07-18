@@ -2,14 +2,16 @@
 
 /** @noinspection PhpUnused */
 
-namespace VAF\WP\Library\Traits;
+namespace VAF\WP\Library\Features;
 
 use InvalidArgumentException;
 use VAF\WP\Library\Module;
 use VAF\WP\Library\Plugin;
 
-trait HasModules
+final class Modules extends AbstractFeature
 {
+    public const FEATURE_NAME = 'modules';
+
     /**
      * List of registered modules
      *
@@ -17,9 +19,11 @@ trait HasModules
      */
     private array $modules = [];
 
-    final protected function startModules(): void
+    final public function __construct(Plugin $plugin, array $modules)
     {
-        foreach ($this->getModules() as $module) {
+        $this->setPlugin($plugin);
+
+        foreach ($modules as $module) {
             $this->registerModule($module);
         }
     }
@@ -38,11 +42,12 @@ trait HasModules
 
         /** @var Module $module */
         $module = new $classname();
-
-        /** @var Plugin $this */
-        $module->setPlugin($this);
+        $module->setPlugin($this->getPlugin());
         $module->register();
     }
 
-    abstract protected function getModules(): array;
+    final public function getName(): string
+    {
+        return self::FEATURE_NAME;
+    }
 }

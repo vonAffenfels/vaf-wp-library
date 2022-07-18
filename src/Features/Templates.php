@@ -1,8 +1,8 @@
 <?php
 
-namespace VAF\WP\Library\Traits\Internal;
+namespace VAF\WP\Library\Features;
 
-trait HasTemplates
+abstract class Templates extends AbstractFeature
 {
     abstract public function renderTemplate(string $template, array $context = []): string;
 }

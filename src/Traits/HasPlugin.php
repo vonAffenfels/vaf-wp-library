@@ -2,7 +2,7 @@
 
 /** @noinspection PhpUnused */
 
-namespace VAF\WP\Library\Traits\Internal;
+namespace VAF\WP\Library\Traits;
 
 use VAF\WP\Library\Plugin;
 
