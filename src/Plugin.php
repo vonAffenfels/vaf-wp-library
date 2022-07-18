@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection PhpUnused */
+
 namespace VAF\WP\Library;
 
 abstract class Plugin
@@ -11,12 +13,22 @@ abstract class Plugin
      */
     private static ?Plugin $instance = null;
 
-    final protected function __contruct()
+    private string $pluginFile;
+
+    final protected function __contruct(string $pluginFile)
     {
+        $this->pluginFile = $pluginFile;
+
         $this->initPlugin();
 
         $this->startTrait('modules');
         $this->startTrait('shortcodes');
+        $this->startTrait('restAPI');
+    }
+
+    final public function getPluginFile(): string
+    {
+        return $this->pluginFile;
     }
 
     final private function startTrait(string $trait): void
@@ -30,12 +42,13 @@ abstract class Plugin
     /**
      * Starts the plugin and creates a new instance
      *
+     * @param string $pluginFile
      * @return void
      */
-    public static function start(): void
+    public static function start(string $pluginFile): void
     {
         if (is_null(self::$instance)) {
-            self::$instance = new static();
+            self::$instance = new static($pluginFile);
         }
     }
 

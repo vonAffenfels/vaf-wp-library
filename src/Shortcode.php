@@ -4,32 +4,11 @@
 
 namespace VAF\WP\Library;
 
+use VAF\WP\Library\Traits\Internal\HasPlugin;
+
 abstract class Shortcode
 {
-    private Plugin $plugin;
-
-    /**
-     * Setter for $plugin
-     *
-     * @param Plugin $plugin
-     * @return $this
-     */
-    final public function setPlugin(Plugin $plugin): Shortcode
-    {
-        $this->plugin = $plugin;
-
-        return $this;
-    }
-
-    /**
-     * Getter for $plugin
-     *
-     * @return Plugin
-     */
-    final public function getPlugin(): Plugin
-    {
-        return $this->plugin;
-    }
+    use HasPlugin;
 
     /**
      * Function should return the name of the shortcode

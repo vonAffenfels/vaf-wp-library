@@ -9,10 +9,11 @@
 namespace VAF\WP\Library;
 
 use InvalidArgumentException;
+use VAF\WP\Library\Traits\Internal\HasPlugin;
 
 abstract class Module
 {
-    private Plugin $plugin;
+    use HasPlugin;
 
     /**
      * Registers hooks for this specific module
@@ -72,27 +73,4 @@ abstract class Module
      * @return array
      */
     abstract protected function getHooks(): array;
-
-    /**
-     * Setter for $plugin
-     *
-     * @param Plugin $plugin
-     * @return $this
-     */
-    final public function setPlugin(Plugin $plugin): Module
-    {
-        $this->plugin = $plugin;
-
-        return $this;
-    }
-
-    /**
-     * Getter for $plugin
-     *
-     * @return Plugin
-     */
-    final public function getPlugin(): Plugin
-    {
-        return $this->plugin;
-    }
 }
