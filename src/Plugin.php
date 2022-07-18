@@ -33,6 +33,11 @@ abstract class Plugin
         return $this->pluginFile;
     }
 
+    final public function getPluginDirectory(): string
+    {
+        return plugin_dir_path($this->getPluginFile());
+    }
+
     final private function startTrait(string $trait): void
     {
         $startMethod = 'start' . ucfirst($trait);
