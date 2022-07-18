@@ -44,7 +44,7 @@ abstract class RestRoute
 
     abstract public function checkPermission(): bool;
 
-    abstract protected function handle(WP_REST_Request $request);
+    abstract protected function handle(WP_REST_Request $request): ?array;
 
     final public function handleRestRequest(WP_REST_Request $request): array
     {
@@ -53,9 +53,12 @@ abstract class RestRoute
         ];
 
         try {
-            $return = array_merge($this->handle($request), [
-                'success' => true
-            ]);
+            $data = $this->handle($request);
+            if ($data) {
+                $return = array_merge($data, [
+                    'success' => true
+                ]);
+            }
         } catch (Exception $e) {
             $return['success'] = false;
             $return['message'] = $e->getMessage();
