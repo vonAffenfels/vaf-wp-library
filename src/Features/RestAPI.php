@@ -13,26 +13,16 @@ use WP_REST_Request;
 
 final class RestAPI extends AbstractFeature
 {
-    protected function getParameters(): array
-    {
-        return [
-            'restNamespace' => [
-                'required' => true
-            ],
-            'restRoutes' => [
-                'required' => true
-            ]
-        ];
-    }
+    private string $restNamespace = '';
 
-    final public function getRestNamespace(): string
+    /**
+     * @param string $restNamespace
+     * @param string[] $restRoutes
+     * @return $this
+     */
+    final public function start(string $restNamespace, array $restRoutes): self
     {
-        return $this->getParameter('restNamespace');
-    }
-
-    final public function start(): self
-    {
-        $restRoutes = $this->getParameter('restRoutes');
+        $this->restNamespace = $restNamespace;
 
         add_filter('rest_api_init', function () use ($restRoutes) {
             foreach ($restRoutes as $route) {
@@ -43,6 +33,10 @@ final class RestAPI extends AbstractFeature
         return $this;
     }
 
+    /**
+     * @param string $classname
+     * @return void
+     */
     final private function registerRestRoute(string $classname): void
     {
         if (!is_subclass_of($classname, 'VAF\WP\Library\RestRoute')) {
@@ -54,7 +48,7 @@ final class RestAPI extends AbstractFeature
         $route->setPlugin($this->getPlugin());
 
         register_rest_route(
-            $this->getRestNamespace(),
+            $this->restNamespace,
             $route->getRoute(),
             [
                 'methods' => $route->getMethod(),
@@ -69,6 +63,10 @@ final class RestAPI extends AbstractFeature
         );
     }
 
+    /**
+     * @param RestRoute $route
+     * @return array
+     */
     final private function getArguments(RestRoute $route): array
     {
         $arguments = $route->getArguments();

@@ -1,20 +1,16 @@
 <?php
 
-/**
- * @noinspection PhpUnused
- * @noinspection PhpMissingReturnTypeInspection
- */
-
 namespace VAF\WP\Library\Features;
-
-use VAF\WP\Library\Plugin;
 
 final class PluginCommunication extends AbstractFeature
 {
-    final public function start(): AbstractFeature
+    /**
+     * @param mixed $instance
+     * @return AbstractFeature
+     */
+    final public function start($instance = null): AbstractFeature
     {
-        $pluginName = $this->getParameter('pluginName');
-        $instance = $this->getParameter('pluginInstance');
+        $pluginName = $this->getPlugin()->getPluginName();
 
         if (is_null($instance)) {
             $instance = $this->getPlugin();
@@ -29,19 +25,5 @@ final class PluginCommunication extends AbstractFeature
         }, 10, 2);
 
         return $this;
-    }
-
-    final protected function getParameters(): array
-    {
-        return [
-            'pluginName' => [
-                'required' => false,
-                'default' => $this->getPlugin()->getPluginName()
-            ],
-            'pluginInstance' => [
-                'required' => false,
-                'default' => null
-            ]
-        ];
     }
 }

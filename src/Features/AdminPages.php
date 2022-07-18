@@ -1,23 +1,18 @@
 <?php
 
-/** @noinspection PhpUnused */
-
 namespace VAF\WP\Library\Features;
 
-use InvalidArgumentException;
 use VAF\WP\Library\AdminPages\AbstractAdminPage;
 use VAF\WP\Library\AdminPages\PageWithChildren;
 
 final class AdminPages extends AbstractFeature
 {
-    final public function start(): self
+    /**
+     * @param AbstractAdminPage $adminPage
+     * @return $this
+     */
+    final public function start(AbstractAdminPage $adminPage): self
     {
-        /** @var AbstractAdminPage $adminPage */
-        $adminPage = $this->getParameter('adminPage');
-        if (is_null($adminPage)) {
-            throw new InvalidArgumentException('Feature "AdminPages" not correctly configured!');
-        }
-
         add_filter('admin_menu', function () use ($adminPage) {
             $slug = $this->getPlugin()->getPluginName() . '-' . $adminPage->getSlug();
 
@@ -51,14 +46,5 @@ final class AdminPages extends AbstractFeature
         });
 
         return $this;
-    }
-
-    final protected function getParameters(): array
-    {
-        return [
-            'adminPage' => [
-                'required' => true
-            ]
-        ];
     }
 }

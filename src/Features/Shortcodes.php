@@ -5,29 +5,27 @@
 namespace VAF\WP\Library\Features;
 
 use InvalidArgumentException;
-use VAF\WP\Library\Plugin;
 use VAF\WP\Library\Shortcode;
 
 final class Shortcodes extends AbstractFeature
 {
-    final protected function getParameters(): array
+    /**
+     * @param string[] $shortcodes
+     * @return $this
+     */
+    final public function start(array $shortcodes): self
     {
-        return [
-            'shortcodes' => [
-                'required' => true
-            ]
-        ];
-    }
-
-    final public function start(): self
-    {
-        foreach ($this->getParameter('shortcodes') as $shortcode) {
+        foreach ($shortcodes as $shortcode) {
             $this->registerShortcode($shortcode);
         }
 
         return $this;
     }
 
+    /**
+     * @param string $classname
+     * @return void
+     */
     final private function registerShortcode(string $classname): void
     {
         if (!is_subclass_of($classname, 'VAF\WP\Library\Shortcode')) {

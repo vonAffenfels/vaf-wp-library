@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection PhpUnused */
-
 namespace VAF\WP\Library\Features;
 
 use InvalidArgumentException;
@@ -9,16 +7,23 @@ use VAF\WP\Library\Module;
 
 final class Modules extends AbstractFeature
 {
-    final public function start(): self
+    /**
+     * @param string[] $modules
+     * @return $this
+     */
+    final public function start(array $modules): self
     {
-        /** @var string $module */
-        foreach ($this->getParameter('modules') as $module) {
+        foreach ($modules as $module) {
             $this->registerModule($module);
         }
 
         return $this;
     }
 
+    /**
+     * @param string $classname
+     * @return void
+     */
     final private function registerModule(string $classname): void
     {
         if (!is_subclass_of($classname, 'VAF\WP\Library\Module')) {
@@ -29,14 +34,5 @@ final class Modules extends AbstractFeature
         $module = new $classname();
         $module->setPlugin($this->getPlugin());
         $module->register();
-    }
-
-    final protected function getParameters(): array
-    {
-        return [
-            'modules' => [
-                'required' => true
-            ]
-        ];
     }
 }
