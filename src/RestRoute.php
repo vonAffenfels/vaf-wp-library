@@ -53,8 +53,9 @@ abstract class RestRoute
         ];
 
         try {
-            $return['data'] = $this->handle($request);
-            $return['success'] = true;
+            $return = array_merge($this->handle($request), [
+                'success' => true
+            ]);
         } catch (Exception $e) {
             $return['success'] = false;
             $return['message'] = $e->getMessage();
