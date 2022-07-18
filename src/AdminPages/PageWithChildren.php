@@ -15,6 +15,8 @@ class PageWithChildren extends AbstractAdminPage
         }
 
         $this->children[] = $child;
+
+        return $this;
     }
 
     /**

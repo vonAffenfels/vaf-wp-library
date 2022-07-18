@@ -8,51 +8,43 @@
 namespace VAF\WP\Library\Features;
 
 use InvalidArgumentException;
-use VAF\WP\Library\Plugin;
 use VAF\WP\Library\RestRoute;
 use WP_REST_Request;
 
 final class RestAPI extends AbstractFeature
 {
-    public const FEATURE_NAME = 'restAPI';
-
-    /**
-     * List of registered rest routes
-     *
-     * @var RestRoute[]
-     */
-    private array $restRoutes = [];
-
-    /**
-     * @var string
-     */
-    private string $restNamespace;
-
-    final public function __construct(Plugin $plugin, string $restNamespace, array $restRoutes)
+    protected function getParameters(): array
     {
-        $this->restNamespace = $restNamespace;
-        $this->setPlugin($plugin);
+        return [
+            'restNamespace' => [
+                'required' => true
+            ],
+            'restRoutes' => [
+                'required' => true
+            ]
+        ];
+    }
+
+    final public function getRestNamespace(): string
+    {
+        return $this->getParameter('restNamespace');
+    }
+
+    final public function start(): self
+    {
+        $restRoutes = $this->getParameter('restRoutes');
 
         add_filter('rest_api_init', function () use ($restRoutes) {
             foreach ($restRoutes as $route) {
                 $this->registerRestRoute($route);
             }
         });
-    }
 
-    final public function getRestNamespace(): string
-    {
-        return $this->restNamespace;
+        return $this;
     }
 
     final private function registerRestRoute(string $classname): void
     {
-        // If we already have the rest route class registered
-        // we don't want to do it again
-        if (isset($this->restRoutes[$classname])) {
-            return;
-        }
-
         if (!is_subclass_of($classname, 'VAF\WP\Library\RestRoute')) {
             throw new InvalidArgumentException('Module must inherit VAF\WP\Library\RestRoute!');
         }
@@ -115,10 +107,5 @@ final class RestAPI extends AbstractFeature
         }
 
         return $return;
-    }
-
-    final public function getName(): string
-    {
-        return self::FEATURE_NAME;
     }
 }

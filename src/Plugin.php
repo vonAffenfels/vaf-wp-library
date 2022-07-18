@@ -4,6 +4,7 @@
 
 namespace VAF\WP\Library;
 
+use Exception;
 use InvalidArgumentException;
 use VAF\WP\Library\Features\AbstractFeature;
 
@@ -38,31 +39,28 @@ abstract class Plugin
     /**
      * Registers a specific feature to this plugin instance
      *
-     * @param AbstractFeature $feature
      * @return $this
      * @throws InvalidArgumentException
+     * @throws Exception
      */
-    final protected function registerFeature(AbstractFeature $feature): self
+    final protected function registerFeature(string $class, array $options): self
     {
-        $name = $feature->getName();
-
-        if (isset($this->features[$name])) {
-            throw new InvalidArgumentException(sprintf('Feature "%s" already registered!', $name));
+        if (isset($this->features[$class])) {
+            throw new InvalidArgumentException(sprintf('Feature "%s" already registered!', $class));
         }
-        $this->features[$name] = $feature;
+
+        if (!is_subclass_of($class, 'VAF\WP\Library\Features\AbstractFeature')) {
+            throw new InvalidArgumentException(sprintf('Feature "%s" has to extend "VAF\WP\Library\Features\AbstractFeature"!', $class));
+        }
+
+        $feature = $class::getInstance();
+        $feature->setPlugin($this);
+        $feature->configure($options);
+        $feature->start();
+
+        $this->features[$class] = $feature;
 
         return $this;
-    }
-
-    /**
-     * Returns a registered feature or null if feature is not found
-     *
-     * @param string $name
-     * @return AbstractFeature|null
-     */
-    final public function getFeature(string $name): ?AbstractFeature
-    {
-        return $this->features[$name] ?? null;
     }
 
     /**

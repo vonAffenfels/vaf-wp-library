@@ -10,32 +10,26 @@ use VAF\WP\Library\Shortcode;
 
 final class Shortcodes extends AbstractFeature
 {
-    public const FEATURE_NAME = 'shortcodes';
-
-    /**
-     * List of registered shortcodes
-     *
-     * @var Shortcode[]
-     */
-    private array $shortcodes = [];
-
-    final public function __construct(Plugin $plugin, array $shortcodes)
+    final protected function getParameters(): array
     {
-        $this->setPlugin($plugin);
+        return [
+            'shortcodes' => [
+                'required' => true
+            ]
+        ];
+    }
 
-        foreach ($shortcodes as $shortcode) {
+    final public function start(): self
+    {
+        foreach ($this->getParameter('shortcodes') as $shortcode) {
             $this->registerShortcode($shortcode);
         }
+
+        return $this;
     }
 
     final private function registerShortcode(string $classname): void
     {
-        // If we already have the shortcode class registered
-        // we don't want to do it again
-        if (isset($this->shortcodes[$classname])) {
-            return;
-        }
-
         if (!is_subclass_of($classname, 'VAF\WP\Library\Shortcode')) {
             throw new InvalidArgumentException('Shortcode must inherit VAF\WP\Library\Shortcode');
         }
@@ -50,10 +44,5 @@ final class Shortcodes extends AbstractFeature
                 return $shortcode->callback($attributes, $content, $tag);
             }
         );
-    }
-
-    final public function getName(): string
-    {
-        return self::FEATURE_NAME;
     }
 }

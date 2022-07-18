@@ -11,18 +11,13 @@ use VAF\WP\Library\Plugin;
 
 final class PluginCommunication extends AbstractFeature
 {
-    public const FEATURE_NAME = 'pluginCommunication';
-
-    final public function __construct(Plugin $plugin, ?string $pluginName = null, $instance = null)
+    final public function start(): AbstractFeature
     {
-        $this->setPlugin($plugin);
-
-        if (is_null($pluginName)) {
-            $pluginName = $plugin->getPluginName();
-        }
+        $pluginName = $this->getParameter('pluginName');
+        $instance = $this->getParameter('pluginInstance');
 
         if (is_null($instance)) {
-            $instance = $plugin;
+            $instance = $this->getPlugin();
         }
 
         add_filter('get_plugin', function ($return, string $plugin) use ($pluginName, $instance) {
@@ -32,10 +27,21 @@ final class PluginCommunication extends AbstractFeature
 
             return $return;
         }, 10, 2);
+
+        return $this;
     }
 
-    final public function getName(): string
+    final protected function getParameters(): array
     {
-        return self::FEATURE_NAME;
+        return [
+            'pluginName' => [
+                'required' => false,
+                'default' => $this->getPlugin()->getPluginName()
+            ],
+            'pluginInstance' => [
+                'required' => false,
+                'default' => null
+            ]
+        ];
     }
 }
