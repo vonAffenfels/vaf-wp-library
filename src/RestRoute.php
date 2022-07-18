@@ -54,7 +54,7 @@ abstract class RestRoute
 
         try {
             $data = $this->handle($request);
-            if ($data) {
+            if (!is_null($data)) {
                 $return = array_merge($data, [
                     'success' => true
                 ]);

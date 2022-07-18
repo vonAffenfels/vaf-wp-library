@@ -15,7 +15,7 @@ abstract class Plugin
 
     private string $pluginFile;
 
-    final protected function __contruct(string $pluginFile)
+    final private function __construct(string $pluginFile)
     {
         $this->pluginFile = $pluginFile;
 
