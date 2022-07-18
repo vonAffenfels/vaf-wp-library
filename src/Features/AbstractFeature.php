@@ -46,11 +46,6 @@ abstract class AbstractFeature
     final public function configure(array $parameters): self
     {
         foreach ($this->getParameters() as $name => $config) {
-            $setter = 'set' . ucfirst($name);
-            if (!method_exists($this, $setter)) {
-                throw new Exception(sprintf('Setter function "%s" not found!', $setter));
-            }
-
             if (isset($parameters[$name])) {
                 $this->parameters[$name] = $parameters[$name];
             } else {
