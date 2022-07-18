@@ -20,7 +20,7 @@ abstract class AbstractAdminPage
      * @param int|null $position
      * @return void
      */
-    final public function __constructor(
+    public function __construct(
         string $pageTitle,
         string $menuTitle,
         string $capability,
