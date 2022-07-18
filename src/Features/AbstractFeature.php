@@ -10,7 +10,7 @@ abstract class AbstractFeature
 {
     private Plugin $plugin;
 
-    private static ?self $instance = null;
+    private static array $instances = [];
 
     private array $parameters = [];
 
@@ -20,11 +20,11 @@ abstract class AbstractFeature
 
     final public static function getInstance(): self
     {
-        if (is_null(static::$instance)) {
-            static::$instance = new static();
+        if (is_null(static::$instances[static::class])) {
+            static::$instances[static::class] = new static();
         }
 
-        return static::$instance;
+        return static::$instances[static::class];
     }
 
     final public function setPlugin(Plugin $plugin): self
