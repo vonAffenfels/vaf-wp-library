@@ -1,14 +1,23 @@
 <?php
 
-/** @noinspection PhpUnused */
+/**
+ * @noinspection PhpUnused
+ */
 
-namespace VAF\WP\Library;
+/**
+ * @package vaf-wp-library
+ */
 
-use VAF\WP\Library\Traits\HasPlugin;
+namespace VAF\WP\Library\Shortcodes;
+
+use VAF\WP\Library\Plugin;
 
 abstract class Shortcode
 {
-    use HasPlugin;
+    //<editor-fold desc="Abstract function definition">
+    /********************************
+     * Abstract function definition *
+     ********************************/
 
     /**
      * Function should return the name of the shortcode
@@ -35,6 +44,30 @@ abstract class Shortcode
      * @return array
      */
     abstract protected function getAttributes(): array;
+    //</editor-fold>
+
+    //<editor-fold desc="Plugin handling">
+    /*******************
+     * Plugin handling *
+     *******************/
+
+    private Plugin $plugin;
+
+    final protected function getPlugin(): Plugin
+    {
+        return $this->plugin;
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Constructor">
+    /***************
+     * Constructor *
+     ***************/
+    final public function __construct(Plugin $plugin)
+    {
+        $this->plugin = $plugin;
+    }
+    //</editor-fold>
 
     /**
      * Callback to handle the shortcode

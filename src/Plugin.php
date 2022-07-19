@@ -1,38 +1,35 @@
 <?php
 
-/** @noinspection PhpUnused */
+/**
+ * @noinspection PhpUnused
+ */
+
+/**
+ * @package vaf-wp-library
+ */
 
 namespace VAF\WP\Library;
 
-use VAF\WP\Library\AdminPages\AbstractAdminPage;
-use VAF\WP\Library\Exceptions\FeatureAlreadyStartedException;
-use VAF\WP\Library\Features\AdminPages;
-use VAF\WP\Library\Features\Modules;
-use VAF\WP\Library\Features\AbstractFeature;
-use VAF\WP\Library\Features\PluginCommunication;
-use VAF\WP\Library\Features\RestAPI;
-use VAF\WP\Library\Features\Shortcodes;
+use VAF\WP\Library\Exceptions\CannotRegisterModule;
+use VAF\WP\Library\Exceptions\ModuleAlreadyRegistered;
+use VAF\WP\Library\Modules\AbstractModule;
 
 abstract class Plugin
 {
-    /**
-     * Plugin instance
-     *
-     * @var Plugin|null
-     */
-    private static ?Plugin $instance = null;
+    //<editor-fold desc="Instance handling">
+    /*********************
+     * Instance handling *
+     *********************/
 
     /**
-     * @var AbstractFeature[]
+     * @var Plugin[]
      */
-    private array $features = [];
+    private static array $instances = [];
 
     /**
-     * Path to the main plugin file
-     *
-     * @var string
+     * @var bool
      */
-    private string $pluginFile;
+    private bool $isConfigured;
 
     /**
      * Starts the plugin and creates a new instance
@@ -42,8 +39,8 @@ abstract class Plugin
      */
     final public static function start(string $pluginFile): void
     {
-        if (is_null(self::$instance)) {
-            self::$instance = new static($pluginFile);
+        if (is_null(self::$instances[static::class] ?? null)) {
+            self::$instances[static::class] = new static($pluginFile);
         }
     }
 
@@ -54,111 +51,29 @@ abstract class Plugin
     {
         $this->pluginFile = $pluginFile;
 
-        $this->initPlugin();
+        $this->configure();
+        $this->isConfigured = true;
+
+        $this->bootModules();
+        $this->boot();
     }
+    //</editor-fold>
+
+    //<editor-fold desc="Plugin detail functions">
+    /***************************
+     * Plugin detail functions *
+     ***************************/
 
     /**
-     * @param string[] $modules
-     * @return $this
-     * @throws FeatureAlreadyStartedException
+     * Path to the main plugin file
+     *
+     * @var string
      */
-    final protected function startModules(array $modules): self
-    {
-        if (isset($this->features[Modules::class])) {
-            throw new FeatureAlreadyStartedException('Modules');
-        }
-
-        $instance = Modules::getInstance();
-        $instance->setPlugin($this);
-        $instance->start($modules);
-
-        $this->features[Modules::class] = $instance;
-
-        return $this;
-    }
+    private string $pluginFile;
 
     /**
-     * @param AbstractAdminPage $adminPage
-     * @return $this
-     * @throws FeatureAlreadyStartedException
-     */
-    final protected function startAdminPages(AbstractAdminPage $adminPage): self
-    {
-        if (isset($this->features[AdminPages::class])) {
-            throw new FeatureAlreadyStartedException('AdminPages');
-        }
-
-        $instance = AdminPages::getInstance();
-        $instance->setPlugin($this);
-        $instance->start($adminPage);
-
-        $this->features[AdminPages::class] = $instance;
-
-        return $this;
-    }
-
-    /**
-     * @param mixed $obj
-     * @return $this
-     * @throws FeatureAlreadyStartedException
-     */
-    final protected function startPluginCommunication($obj = null): self
-    {
-        if (isset($this->features[PluginCommunication::class])) {
-            throw new FeatureAlreadyStartedException('PluginCommunication');
-        }
-
-        $instance = PluginCommunication::getInstance();
-        $instance->setPlugin($this);
-        $instance->start($obj);
-
-        $this->features[PluginCommunication::class] = $instance;
-
-        return $this;
-    }
-
-    /**
-     * @param string $restNamespace
-     * @param string[] $restRoutes
-     * @return $this
-     * @throws FeatureAlreadyStartedException
-     */
-    final protected function startRestApi(string $restNamespace, array $restRoutes): self
-    {
-        if (isset($this->features[RestAPI::class])) {
-            throw new FeatureAlreadyStartedException('RestAPI');
-        }
-
-        $instance = RestAPI::getInstance();
-        $instance->setPlugin($this);
-        $instance->start($restNamespace, $restRoutes);
-
-        $this->features[RestAPI::class] = $instance;
-
-        return $this;
-    }
-
-    /**
-     * @param string[] $shortcodes
-     * @return $this
-     * @throws FeatureAlreadyStartedException
-     */
-    final protected function startShortcodes(array $shortcodes): self
-    {
-        if (isset($this->features[Shortcodes::class])) {
-            throw new FeatureAlreadyStartedException('Shortcodes');
-        }
-
-        $instance = Shortcodes::getInstance();
-        $instance->setPlugin($this);
-        $instance->start($shortcodes);
-
-        $this->features[Shortcodes::class] = $instance;
-
-        return $this;
-    }
-
-    /**
+     * Getter for $pluginFile
+     *
      * @return string
      */
     final public function getPluginFile(): string
@@ -167,6 +82,8 @@ abstract class Plugin
     }
 
     /**
+     * Returns the directory for the plugin
+     *
      * @return string
      */
     final public function getPluginDirectory(): string
@@ -175,15 +92,77 @@ abstract class Plugin
     }
 
     /**
+     * Returns the plugin name based on the plugin filename
+     *
      * @return string
      */
     public function getPluginName(): string
     {
         return basename($this->getPluginFile(), '.php');
     }
+    //</editor-fold>
+
+    //<editor-fold desc="Module functions">
+    /********************
+     * Module functions *
+     ********************/
 
     /**
-     * Function is called when the plugin starts and is initialized
+     * @var AbstractModule[]
      */
-    abstract protected function initPlugin(): void;
+    private array $modules = [];
+
+    /**
+     * Registers a new module for this plugin
+     *
+     * @returns void
+     * @throws CannotRegisterModule
+     * @throws ModuleAlreadyRegistered
+     */
+    final public function registerModule(AbstractModule $module): void
+    {
+        if ($this->isConfigured) {
+            throw new CannotRegisterModule($this, $module);
+        }
+
+        $moduleClass = get_class($module);
+        if (isset($this->modules[$moduleClass])) {
+            throw new ModuleAlreadyRegistered($this, $module);
+        }
+
+        $this->modules[$moduleClass] = $module;
+    }
+
+    /**
+     * Boots all registered modules
+     *
+     * @return void
+     */
+    final private function bootModules(): void
+    {
+        foreach ($this->modules as $module) {
+            $module->boot();
+        }
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Abstract function defintions">
+    /*********************************
+     * Abstract function definitions *
+     *********************************/
+
+    /**
+     * Function where the plugin will be configured
+     *
+     * @return void
+     */
+    abstract protected function configure(): void;
+
+    /**
+     * Will be called after configuration and boot of modules have happened
+     *
+     * @return void
+     */
+    abstract protected function boot(): void;
+    //</editor-fold>
 }

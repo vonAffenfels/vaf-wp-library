@@ -5,47 +5,61 @@
  * @noinspection PhpUnusedParameterInspection
  */
 
-namespace VAF\WP\Library\Features;
+/**
+ * @package vaf-wp-library
+ */
 
-use InvalidArgumentException;
-use VAF\WP\Library\RestRoute;
+namespace VAF\WP\Library\Modules;
+
+use Closure;
+use VAF\WP\Library\Exceptions\InvalidClass;
+use VAF\WP\Library\Plugin;
+use VAF\WP\Library\RestAPI\Route;
 use WP_REST_Request;
 
-final class RestAPI extends AbstractFeature
+final class RestAPIModule extends AbstractHookModule
 {
-    private string $restNamespace = '';
+    private array $routes;
+    private string $restNamespace;
 
     /**
+     * @param Plugin $plugin
+     * @param string[] $routes
      * @param string $restNamespace
-     * @param string[] $restRoutes
-     * @return $this
      */
-    final public function start(string $restNamespace, array $restRoutes): self
+    public function __construct(Plugin $plugin, array $routes, string $restNamespace)
     {
+        $this->routes = $routes;
         $this->restNamespace = $restNamespace;
 
-        add_filter('rest_api_init', function () use ($restRoutes) {
-            foreach ($restRoutes as $route) {
-                $this->registerRestRoute($route);
-            }
-        });
-
-        return $this;
+        parent::__construct($plugin);
     }
 
     /**
-     * @param string $classname
-     * @return void
+     * @return Closure[]
      */
-    final private function registerRestRoute(string $classname): void
+    protected function getHooks(): array
     {
-        if (!is_subclass_of($classname, 'VAF\WP\Library\RestRoute')) {
-            throw new InvalidArgumentException('Module must inherit VAF\WP\Library\RestRoute!');
+        return [
+            'rest_api_init' => function () {
+                foreach ($this->routes as $route) {
+                    $this->registerRestRoute($route);
+                }
+            }
+        ];
+    }
+
+    /**
+     * @throws InvalidClass
+     */
+    private function registerRestRoute(string $classname): void
+    {
+        if (!is_subclass_of($classname, Route::class)) {
+            throw new InvalidClass($this, $classname, Route::class);
         }
 
-        /** @var RestRoute $route */
-        $route = new $classname();
-        $route->setPlugin($this->getPlugin());
+        /** @var Route $route */
+        $route = new $classname($this->getPlugin());
 
         register_rest_route(
             $this->restNamespace,
@@ -64,10 +78,10 @@ final class RestAPI extends AbstractFeature
     }
 
     /**
-     * @param RestRoute $route
+     * @param Route $route
      * @return array
      */
-    final private function getArguments(RestRoute $route): array
+    final private function getArguments(Route $route): array
     {
         $arguments = $route->getArguments();
         $return = [];
