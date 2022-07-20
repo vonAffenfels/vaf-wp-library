@@ -2,6 +2,7 @@
 
 /**
  * @noinspection PhpUnused
+ * @noinspection PhpUnusedFieldDefaultValueInspection
  */
 
 /**
@@ -29,7 +30,7 @@ abstract class Plugin
     /**
      * @var bool
      */
-    private bool $isConfigured;
+    private bool $isConfigured = false;
 
     /**
      * Starts the plugin and creates a new instance
