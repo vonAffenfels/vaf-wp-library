@@ -38,7 +38,7 @@ final class PluginCommunicationModule extends AbstractHookModule
                 self::ARGUMENTS => 2,
                 self::CALLBACK => function ($return, string $plugin) use ($pluginName, $callback) {
                     if ($plugin === $pluginName) {
-                        $return = $this->$callback();
+                        $return = $callback();
                     }
 
                     return $return;
