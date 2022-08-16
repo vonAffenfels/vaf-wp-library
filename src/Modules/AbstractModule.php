@@ -52,7 +52,7 @@ abstract class AbstractModule
     /**
      * @var bool Determines if the plugin is already configured
      */
-    private bool $isConfigured = false;
+    private bool $isConfigured;
 
     /**
      * Returns the state of the configuration of the module

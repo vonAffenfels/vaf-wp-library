@@ -5,7 +5,6 @@ namespace VAF\WP\Library\Exceptions\Module;
 use Exception;
 use Throwable;
 use VAF\WP\Library\AbstractPlugin;
-use VAF\WP\Library\Modules\AbstractModule;
 
 final class ModuleAlreadyRegistered extends Exception
 {

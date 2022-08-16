@@ -12,7 +12,6 @@
 namespace VAF\WP\Library\Modules;
 
 use Closure;
-use VAF\WP\Library\Exceptions\Module\ModuleAlreadyConfigured;
 use VAF\WP\Library\Exceptions\Module\RestAPI\InvalidRouteClass;
 use VAF\WP\Library\RestAPI\Route;
 use WP_REST_Request;
@@ -29,8 +28,8 @@ final class RestAPIModule extends AbstractHookModule
     final public static function configure(array $routes, string $restNamespace): callable
     {
         return function (RestAPIModule $module) use ($routes, $restNamespace) {
-            $module->setRoutes($routes);
-            $module->setRestNamespace($restNamespace);
+            $module->routes = $routes;
+            $module->restNamespace = $restNamespace;
         };
     }
 
@@ -43,36 +42,6 @@ final class RestAPIModule extends AbstractHookModule
      * @var string Namespace for the Rest API module
      */
     private string $restNamespace = '';
-
-    /**
-     * @param array $routes
-     * @return void
-     * @throws ModuleAlreadyConfigured
-     */
-    final private function setRoutes(array $routes): void
-    {
-        if ($this->isConfigured()) {
-            // Module is already configured!
-            throw new ModuleAlreadyConfigured($this->getPlugin(), 'RestAPI');
-        }
-
-        $this->routes = $routes;
-    }
-
-    /**
-     * @param string $restNamespace
-     * @return void
-     * @throws ModuleAlreadyConfigured
-     */
-    final private function setRestNamespace(string $restNamespace): void
-    {
-        if ($this->isConfigured()) {
-            // Module is already configured!
-            throw new ModuleAlreadyConfigured($this->getPlugin(), 'RestAPI');
-        }
-
-        $this->restNamespace = $restNamespace;
-    }
 
     /**
      * @return Closure[]

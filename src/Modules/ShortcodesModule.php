@@ -10,7 +10,6 @@
 
 namespace VAF\WP\Library\Modules;
 
-use VAF\WP\Library\Exceptions\Module\ModuleAlreadyConfigured;
 use VAF\WP\Library\Exceptions\Module\Shortcode\InvalidShortcodeClass;
 use VAF\WP\Library\Shortcodes\Shortcode;
 
@@ -25,7 +24,7 @@ final class ShortcodesModule extends AbstractModule
     final public static function configure(array $shortcodes): callable
     {
         return function (ShortcodesModule $module) use ($shortcodes) {
-            $module->setShortcodes($shortcodes);
+            $module->shortcodes = $shortcodes;
         };
     }
 
@@ -33,21 +32,6 @@ final class ShortcodesModule extends AbstractModule
      * @var string[] Shortcode classes to register
      */
     private array $shortcodes;
-
-    /**
-     * @param array $shortcodes
-     * @return void
-     * @throws ModuleAlreadyConfigured
-     */
-    final private function setShortcodes(array $shortcodes): void
-    {
-        if ($this->isConfigured()) {
-            // Module is already configured!
-            throw new ModuleAlreadyConfigured($this->getPlugin(), 'Shortcodes');
-        }
-
-        $this->shortcodes = $shortcodes;
-    }
 
     /**
      * @return void

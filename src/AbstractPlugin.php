@@ -1,4 +1,8 @@
-<?php /** @noinspection PhpUnused */
+<?php
+
+/**
+ * @noinspection PhpUnused
+ */
 
 /**
  * @package vaf-wp-library
@@ -8,9 +12,12 @@ namespace VAF\WP\Library;
 
 use VAF\WP\Library\Exceptions\Module\InvalidModuleClass;
 use VAF\WP\Library\Exceptions\Module\ModuleAlreadyRegistered;
+use VAF\WP\Library\Exceptions\Module\ModuleNotRegistered;
 use VAF\WP\Library\Exceptions\Plugin\PluginAlreadyConfigured;
 use VAF\WP\Library\Exceptions\Plugin\PluginNotConfigured;
 use VAF\WP\Library\Modules\AbstractModule;
+use VAF\WP\Library\Modules\PluginAPIModule;
+use VAF\WP\Library\PluginAPI\AbstractPluginAPI;
 
 abstract class AbstractPlugin
 {
@@ -215,5 +222,46 @@ abstract class AbstractPlugin
 
         return $this;
     }
+
+    /**
+     * Checks if a module has been registered
+     *
+     * @param string $moduleClass
+     * @return bool
+     */
+    final protected function hasModule(string $moduleClass): bool
+    {
+        return isset($this->modules[$moduleClass]);
+    }
+
+    /**
+     * Returns the requested module if registered
+     *
+     * @param string $moduleClass
+     * @return AbstractModule|null
+     */
+    final protected function getModule(string $moduleClass): ?AbstractModule
+    {
+        return $this->modules[$moduleClass] ?? null;
+    }
     //</editor-fold>
+
+    /**
+     * Returns an instance of the plugin API
+     *
+     * @return AbstractPluginAPI
+     * @throws ModuleNotRegistered
+     */
+    final public function getPluginAPI(): AbstractPluginAPI
+    {
+        if (!$this->hasModule(PluginAPIModule::class)) {
+            // Module PluginAPI is not registered
+            throw new ModuleNotRegistered($this, 'PluginAPI');
+        }
+
+        /** @var PluginAPIModule $module */
+        $module = $this->getModule(PluginAPIModule::class);
+
+        return $module->getPluginAPI();
+    }
 }
