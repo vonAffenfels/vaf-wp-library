@@ -11,7 +11,6 @@
 namespace VAF\WP\Library\RestAPI;
 
 use Exception;
-use VAF\WP\Library\Plugin;
 use WP_REST_Request;
 
 abstract class Route
@@ -75,29 +74,6 @@ abstract class Route
      * @return array|null
      */
     abstract protected function handle(WP_REST_Request $request): ?array;
-    //</editor-fold>
-
-    //<editor-fold desc="Plugin handling">
-    /*******************
-     * Plugin handling *
-     *******************/
-
-    private Plugin $plugin;
-
-    final protected function getPlugin(): Plugin
-    {
-        return $this->plugin;
-    }
-    //</editor-fold>
-
-    //<editor-fold desc="Constructor">
-    /***************
-     * Constructor *
-     ***************/
-    final public function __construct(Plugin $plugin)
-    {
-        $this->plugin = $plugin;
-    }
     //</editor-fold>
 
     /**

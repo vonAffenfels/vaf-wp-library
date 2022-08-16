@@ -12,28 +12,36 @@
 namespace VAF\WP\Library\Modules;
 
 use Closure;
-use VAF\WP\Library\Exceptions\InvalidClass;
-use VAF\WP\Library\Plugin;
+use VAF\WP\Library\Exceptions\Module\RestAPI\InvalidRouteClass;
 use VAF\WP\Library\RestAPI\Route;
 use WP_REST_Request;
 
 final class RestAPIModule extends AbstractHookModule
 {
-    private array $routes;
-    private string $restNamespace;
+    /**
+     * Returns a callable that is run to configure the module
+     *
+     * @param array $routes
+     * @param string $restNamespace
+     * @return callable
+     */
+    final public static function configure(array $routes, string $restNamespace): callable
+    {
+        return function (RestAPIModule $module) use ($routes, $restNamespace) {
+            $module->routes = $routes;
+            $module->restNamespace = $restNamespace;
+        };
+    }
 
     /**
-     * @param Plugin $plugin
-     * @param string[] $routes
-     * @param string $restNamespace
+     * @var string[] Route classes to register
      */
-    public function __construct(Plugin $plugin, array $routes, string $restNamespace)
-    {
-        $this->routes = $routes;
-        $this->restNamespace = $restNamespace;
+    private array $routes = [];
 
-        parent::__construct($plugin);
-    }
+    /**
+     * @var string Namespace for the Rest API module
+     */
+    private string $restNamespace = '';
 
     /**
      * @return Closure[]
@@ -50,16 +58,16 @@ final class RestAPIModule extends AbstractHookModule
     }
 
     /**
-     * @throws InvalidClass
+     * @throws InvalidRouteClass
      */
     private function registerRestRoute(string $classname): void
     {
         if (!is_subclass_of($classname, Route::class)) {
-            throw new InvalidClass($this, $classname, Route::class);
+            throw new InvalidRouteClass($this->getPlugin(), $classname);
         }
 
         /** @var Route $route */
-        $route = new $classname($this->getPlugin());
+        $route = new $classname();
 
         register_rest_route(
             $this->restNamespace,

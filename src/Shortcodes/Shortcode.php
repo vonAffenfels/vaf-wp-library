@@ -10,8 +10,6 @@
 
 namespace VAF\WP\Library\Shortcodes;
 
-use VAF\WP\Library\Plugin;
-
 abstract class Shortcode
 {
     //<editor-fold desc="Abstract function definition">
@@ -46,29 +44,7 @@ abstract class Shortcode
     abstract protected function getAttributes(): array;
     //</editor-fold>
 
-    //<editor-fold desc="Plugin handling">
-    /*******************
-     * Plugin handling *
-     *******************/
-
-    private Plugin $plugin;
-
-    final protected function getPlugin(): Plugin
-    {
-        return $this->plugin;
-    }
-    //</editor-fold>
-
-    //<editor-fold desc="Constructor">
-    /***************
-     * Constructor *
-     ***************/
-    final public function __construct(Plugin $plugin)
-    {
-        $this->plugin = $plugin;
-    }
-    //</editor-fold>
-
+    //<editor-fold desc="Callback">
     /**
      * Callback to handle the shortcode
      *
@@ -83,4 +59,5 @@ abstract class Shortcode
 
         return $this->handle($attributes, $content);
     }
+    //</editor-fold>
 }
