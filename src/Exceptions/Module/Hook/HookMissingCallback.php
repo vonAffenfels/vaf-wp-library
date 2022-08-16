@@ -4,19 +4,24 @@
  * @package vaf-wp-library
  */
 
-namespace VAF\WP\Library\Modules\Exceptions;
+namespace VAF\WP\Library\Exceptions\Module\Hook;
 
 use Exception;
 use Throwable;
+use VAF\WP\Library\AbstractPlugin;
 use VAF\WP\Library\Modules\AbstractHookModule;
 
 final class HookMissingCallback extends Exception
 {
-    public function __construct(AbstractHookModule $module, string $hook, Throwable $previous = null)
-    {
+    public function __construct(
+        AbstractPlugin $plugin,
+        AbstractHookModule $module,
+        string $hook,
+        Throwable $previous = null
+    ) {
         $message = sprintf(
             '[Plugin %s] [Module %s] Missing callback for hook "%s"!',
-            $module->getPlugin()->getPluginName(),
+            $plugin->getPluginSlug(),
             get_class($module),
             $hook
         );

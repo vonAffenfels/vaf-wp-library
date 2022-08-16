@@ -6,8 +6,8 @@
 
 namespace VAF\WP\Library\Modules;
 
-use VAF\WP\Library\Modules\Exceptions\HookInvalidConfiguration;
-use VAF\WP\Library\Modules\Exceptions\HookMissingCallback;
+use VAF\WP\Library\Exceptions\Module\Hook\HookInvalidConfiguration;
+use VAF\WP\Library\Exceptions\Module\Hook\HookMissingCallback;
 
 abstract class AbstractHookModule extends AbstractModule
 {
@@ -21,12 +21,12 @@ abstract class AbstractHookModule extends AbstractModule
      ****************************/
 
     /**
-     * Boots up the hook module
+     * Starts the hook module
      *
      * @throws HookMissingCallback
      * @throws HookInvalidConfiguration
      */
-    final public function boot(): void
+    final public function start(): void
     {
         foreach ($this->getHooks() as $hook => $callback) {
             if (is_string($callback)) {
@@ -37,7 +37,7 @@ abstract class AbstractHookModule extends AbstractModule
                 }
             } elseif (is_array($callback)) {
                 if (!isset($callback[self::CALLBACK])) {
-                    throw new HookMissingCallback($this, $hook);
+                    throw new HookMissingCallback($this->getPlugin(), $this, $hook);
                 }
                 $method = $callback[self::CALLBACK];
                 $priority = $callback[self::PRIORITY] ?? 10;
@@ -56,7 +56,7 @@ abstract class AbstractHookModule extends AbstractModule
             } elseif (is_callable($callback)) {
                 add_filter($hook, $callback);
             } else {
-                throw new HookInvalidConfiguration($this, $hook);
+                throw new HookInvalidConfiguration($this->getPlugin(), $this, $hook);
             }
         }
     }

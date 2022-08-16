@@ -1,43 +1,67 @@
 <?php
 
 /**
- * @noinspection PhpUnused
- */
-
-/**
  * @package vaf-wp-library
  */
 
 namespace VAF\WP\Library\Modules;
 
-use VAF\WP\Library\Plugin;
+use VAF\WP\Library\AbstractPlugin;
 
 abstract class AbstractModule
 {
+    //<editor-fold desc="Plugin functions">
+    /********************
+     * Plugin functions *
+     ********************/
+
+    private AbstractPlugin $plugin;
+
+    final protected function getPlugin(): AbstractPlugin
+    {
+        return $this->plugin;
+    }
+    //</editor-fold>
+
     //<editor-fold desc="Constructor">
     /***************
      * Constructor *
      ***************/
 
     /**
-     * @param Plugin $plugin
+     * @param AbstractPlugin $plugin
+     * @param callable|null $configureFunction
      */
-    public function __construct(Plugin $plugin)
+    final public function __construct(AbstractPlugin $plugin, ?callable $configureFunction)
     {
         $this->plugin = $plugin;
+
+        if (is_callable($configureFunction)) {
+            $configureFunction($this);
+        }
+
+        $this->isConfigured = true;
     }
     //</editor-fold>
 
-    //<editor-fold desc="Plugin functions">
-    /********************
-     * Plugin functions *
-     ********************/
+    //<editor-fold desc="Instance handling">
+    /*********************
+     * Instance handling *
+     *********************/
 
-    private Plugin $plugin;
+    /**
+     * @var bool Determines if the plugin is already configured
+     */
+    private bool $isConfigured = false;
 
-    final public function getPlugin(): Plugin
+    /**
+     * Returns the state of the configuration of the module
+     *
+     * @return bool
+     */
+    final protected function isConfigured(): bool
     {
-        return $this->plugin;
+        return $this->isConfigured;
     }
     //</editor-fold>
 
@@ -47,10 +71,10 @@ abstract class AbstractModule
      *********************************/
 
     /**
-     * Is called when the module is booted up
+     * Is called when the module should start
      *
      * @return void
      */
-    abstract public function boot(): void;
+    abstract public function start(): void;
     //</editor-fold>
 }
