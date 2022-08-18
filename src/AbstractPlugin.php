@@ -13,10 +13,14 @@ namespace VAF\WP\Library;
 use VAF\WP\Library\Exceptions\Module\InvalidModuleClass;
 use VAF\WP\Library\Exceptions\Module\ModuleAlreadyRegistered;
 use VAF\WP\Library\Exceptions\Module\ModuleNotRegistered;
+use VAF\WP\Library\Exceptions\Module\Setting\MissingSettingKey;
+use VAF\WP\Library\Exceptions\Module\Setting\SettingNotRegistered;
+use VAF\WP\Library\Exceptions\Module\Setting\SettingsGroupNotRegistered;
 use VAF\WP\Library\Exceptions\Plugin\PluginAlreadyConfigured;
 use VAF\WP\Library\Exceptions\Plugin\PluginNotConfigured;
 use VAF\WP\Library\Modules\AbstractModule;
 use VAF\WP\Library\Modules\PluginAPIModule;
+use VAF\WP\Library\Modules\SettingsModule;
 use VAF\WP\Library\PluginAPI\AbstractPluginAPI;
 
 abstract class AbstractPlugin
@@ -64,11 +68,6 @@ abstract class AbstractPlugin
     private bool $isConfigured = false;
 
     /**
-     * @var bool Determines if the plugin is already started
-     */
-    private bool $isStarted = false;
-
-    /**
      * Configures the plugin to a state it is bootable
      *
      * @return $this
@@ -106,20 +105,10 @@ abstract class AbstractPlugin
             throw new PluginNotConfigured($this);
         }
 
-        $this->startPlugin();
         $this->startModules();
-
-        $this->isStarted = true;
 
         return $this;
     }
-
-    /**
-     * Abstract function to start additional stuff
-     *
-     * @return $this
-     */
-    abstract protected function startPlugin(): self;
 
     /**
      * Function to configure additional stuff like modules
@@ -263,5 +252,29 @@ abstract class AbstractPlugin
         $module = $this->getModule(PluginAPIModule::class);
 
         return $module->getPluginAPI();
+    }
+
+    /**
+     * Returns the value of the requested setting
+     *
+     * @param string $setting
+     * @param null $default
+     * @return void
+     * @throws MissingSettingKey
+     * @throws SettingNotRegistered
+     * @throws SettingsGroupNotRegistered
+     * @throws ModuleNotRegistered
+     */
+    final public function getSetting(string $setting, $default = null)
+    {
+        if (!$this->hasModule(SettingsModule::class)) {
+            // Module Settings is not registered
+            throw new ModuleNotRegistered($this, 'Settings');
+        }
+
+        /** @var SettingsModule $module */
+        $module = $this->getModule(SettingsModule::class);
+
+        return $module->getSetting($setting, $default);
     }
 }
