@@ -86,7 +86,7 @@ final class SettingsModule extends AbstractModule
             );
         }
 
-        $setting->loadValue($this->groupValues[$setting->getKey()] ?? null);
+        $setting->loadValue($this->groupValues[$settingsGroup->getKey()][$setting->getKey()] ?? null);
 
         return $returnObject ? $setting : $setting->getValue();
     }
