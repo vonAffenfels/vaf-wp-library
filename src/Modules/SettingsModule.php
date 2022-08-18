@@ -44,12 +44,13 @@ final class SettingsModule extends AbstractModule
 
     /**
      * @param string $setting
+     * @param bool $returnObject
      * @return mixed
-     * @throws SettingsGroupNotRegistered
      * @throws MissingSettingKey
      * @throws SettingNotRegistered
+     * @throws SettingsGroupNotRegistered
      */
-    final public function getSetting(string $setting)
+    final public function getSetting(string $setting, bool $returnObject = false)
     {
         if (strpos($setting, '.') === false) {
             // No setting requested => this is not supported (yet)
@@ -74,7 +75,7 @@ final class SettingsModule extends AbstractModule
 
         // Return value directly if already loaded
         if ($setting->isLoaded()) {
-            return $setting->getValue();
+            return $returnObject ? $setting : $setting->getValue();
         }
 
         // Check if we need to load values from database
@@ -87,6 +88,6 @@ final class SettingsModule extends AbstractModule
 
         $setting->loadValue($this->groupValues[$setting->getKey()] ?? null);
 
-        return $setting->getValue();
+        return $returnObject ? $setting : $setting->getValue();
     }
 }
