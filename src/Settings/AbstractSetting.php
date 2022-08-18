@@ -2,6 +2,8 @@
 
 namespace VAF\WP\Library\Settings;
 
+use VAF\WP\Library\Helper;
+
 abstract class AbstractSetting
 {
     /**
@@ -26,7 +28,7 @@ abstract class AbstractSetting
 
     final public function __construct(string $key, $default = null)
     {
-        $this->key = sanitize_key($key);
+        $this->key = Helper::sanitizeKey($key);
         $this->default = $default;
     }
 

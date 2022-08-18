@@ -68,7 +68,7 @@ final class SettingsModule extends AbstractModule
         $settingsGroup = $this->settingsGroups[$settingsGroup];
 
         if (!$settingsGroup->hasSetting($setting)) {
-            throw new SettingNotRegistered($this->getPlugin(), $setting);
+            throw new SettingNotRegistered($this->getPlugin(), $settingsGroup, $setting);
         }
 
         $setting = $settingsGroup->getSetting($setting);
