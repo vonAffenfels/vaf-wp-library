@@ -258,14 +258,13 @@ abstract class AbstractPlugin
      * Returns the value of the requested setting
      *
      * @param string $setting
-     * @param null $default
      * @return void
      * @throws MissingSettingKey
      * @throws SettingNotRegistered
      * @throws SettingsGroupNotRegistered
      * @throws ModuleNotRegistered
      */
-    final public function getSetting(string $setting, $default = null)
+    final public function getSetting(string $setting)
     {
         if (!$this->hasModule(SettingsModule::class)) {
             // Module Settings is not registered
@@ -275,6 +274,6 @@ abstract class AbstractPlugin
         /** @var SettingsModule $module */
         $module = $this->getModule(SettingsModule::class);
 
-        return $module->getSetting($setting, $default);
+        return $module->getSetting($setting);
     }
 }
