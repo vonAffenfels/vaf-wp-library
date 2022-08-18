@@ -258,7 +258,7 @@ abstract class AbstractPlugin
      * Returns the value of the requested setting
      *
      * @param string $setting
-     * @return void
+     * @return mixed
      * @throws MissingSettingKey
      * @throws SettingNotRegistered
      * @throws SettingsGroupNotRegistered
