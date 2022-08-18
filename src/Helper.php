@@ -12,6 +12,6 @@ final class Helper
      */
     final public static function sanitizeKey(string $value): string
     {
-        return preg_replace('/[^a-z0-9_\-]/', '', $value);
+        return preg_replace('/[^A-Za-z0-9_\-]/', '', $value);
     }
 }
