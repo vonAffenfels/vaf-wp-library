@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @noinspection PhpUnused
+ */
+
 namespace VAF\WP\Library\AdminPages;
 
 use VAF\WP\Library\Exceptions\ObjectIsLocked;

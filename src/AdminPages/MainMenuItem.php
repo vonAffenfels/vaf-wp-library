@@ -1,9 +1,12 @@
 <?php
 
+/**
+ * @noinspection PhpUnused
+ */
+
 namespace VAF\WP\Library\AdminPages;
 
 use VAF\WP\Library\Exceptions\ObjectIsLocked;
-use VAF\WP\Library\IsImmutable;
 
 final class MainMenuItem extends AbstractMenuItem
 {
