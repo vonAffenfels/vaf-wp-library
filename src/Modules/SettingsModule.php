@@ -2,6 +2,7 @@
 
 namespace VAF\WP\Library\Modules;
 
+use InvalidArgumentException;
 use VAF\WP\Library\Exceptions\Module\Setting\MissingSettingKey;
 use VAF\WP\Library\Exceptions\Module\Setting\SettingNotRegistered;
 use VAF\WP\Library\Exceptions\Module\Setting\SettingsGroupNotRegistered;
@@ -19,6 +20,21 @@ final class SettingsModule extends AbstractModule
     final public static function configure(array $settingsGroups): callable
     {
         return function (SettingsModule $module) use ($settingsGroups) {
+            $filteredMenuItems = array_filter($settingsGroups, function ($item) {
+                return $item instanceof SettingsGroup;
+            });
+
+            if (count($filteredMenuItems) !== count($settingsGroups)) {
+                throw new InvalidArgumentException(
+                    sprintf(
+                        "Parameter %s of %s has to contain only objects of class %s",
+                        '$settingsGroups',
+                        SettingsModule::class,
+                        SettingsGroup::class
+                    )
+                );
+            }
+
             foreach ($settingsGroups as $settingsGroup) {
                 $settingsGroup->lockObject();
                 $module->settingsGroups[$settingsGroup->getKey()] = $settingsGroup;
