@@ -18,7 +18,7 @@ final class ShortcodesModule extends AbstractModule
     /**
      * Returns a callable that is run to configure the module
      *
-     * @param array $shortcodes
+     * @param  array $shortcodes
      * @return callable
      */
     final public static function configure(array $shortcodes): callable
@@ -45,7 +45,7 @@ final class ShortcodesModule extends AbstractModule
     }
 
     /**
-     * @param string $classname
+     * @param  string $classname
      * @return void
      * @throws InvalidShortcodeClass
      */

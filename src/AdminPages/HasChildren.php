@@ -32,7 +32,7 @@ trait HasChildren
     }
 
     /**
-     * @param ChildMenuItem $child
+     * @param  ChildMenuItem $child
      * @return $this
      * @throws ObjectIsLocked
      */

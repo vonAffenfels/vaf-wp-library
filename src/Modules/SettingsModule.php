@@ -14,14 +14,14 @@ final class SettingsModule extends AbstractModule
     /**
      * Returns a callable that is run to configure the module
      *
-     * @param SettingsGroup[] $settingsGroups
+     * @param  SettingsGroup[] $settingsGroups
      * @return callable
      */
     final public static function configure(array $settingsGroups): callable
     {
         return function (SettingsModule $module) use ($settingsGroups) {
             $filteredMenuItems = array_filter($settingsGroups, function ($item) {
-                return $item instanceof SettingsGroup;
+                    return $item instanceof SettingsGroup;
             });
 
             if (count($filteredMenuItems) !== count($settingsGroups)) {
@@ -60,8 +60,8 @@ final class SettingsModule extends AbstractModule
     private array $groupValues = [];
 
     /**
-     * @param string $setting
-     * @param bool $returnObject
+     * @param  string $setting
+     * @param  bool   $returnObject
      * @return mixed
      * @throws MissingSettingKey
      * @throws SettingNotRegistered

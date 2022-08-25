@@ -21,8 +21,8 @@ final class RestAPIModule extends AbstractHookModule
     /**
      * Returns a callable that is run to configure the module
      *
-     * @param array $routes
-     * @param string $restNamespace
+     * @param  array  $routes
+     * @param  string $restNamespace
      * @return callable
      */
     final public static function configure(array $routes, string $restNamespace): callable
@@ -86,7 +86,7 @@ final class RestAPIModule extends AbstractHookModule
     }
 
     /**
-     * @param Route $route
+     * @param  Route $route
      * @return array
      */
     final private function getArguments(Route $route): array

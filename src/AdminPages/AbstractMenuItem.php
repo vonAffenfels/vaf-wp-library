@@ -71,7 +71,7 @@ abstract class AbstractMenuItem
     }
 
     /**
-     * @param string $pageTitle
+     * @param  string $pageTitle
      * @return $this
      * @throws ObjectIsLocked
      */
@@ -92,7 +92,7 @@ abstract class AbstractMenuItem
     }
 
     /**
-     * @param int $position
+     * @param  int $position
      * @return $this
      * @throws ObjectIsLocked
      */

@@ -30,7 +30,7 @@ abstract class AbstractModule
 
     /**
      * @param AbstractPlugin $plugin
-     * @param callable|null $configureFunction
+     * @param callable|null  $configureFunction
      */
     final public function __construct(AbstractPlugin $plugin, ?callable $configureFunction)
     {

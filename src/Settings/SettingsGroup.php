@@ -42,7 +42,7 @@ final class SettingsGroup
     }
 
     /**
-     * @param AbstractSetting $setting
+     * @param  AbstractSetting $setting
      * @return $this
      * @throws ObjectIsLocked
      */
@@ -64,7 +64,7 @@ final class SettingsGroup
     }
 
     /**
-     * @param string $key
+     * @param  string $key
      * @return bool
      */
     final public function hasSetting(string $key): bool

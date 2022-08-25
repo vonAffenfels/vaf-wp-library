@@ -7,7 +7,7 @@ final class Helper
     /**
      * Sanitizes a string so that it can be used as a key
      *
-     * @param string $value
+     * @param  string $value
      * @return string
      */
     final public static function sanitizeKey(string $value): string

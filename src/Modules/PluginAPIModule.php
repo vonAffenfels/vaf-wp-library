@@ -13,7 +13,7 @@ final class PluginAPIModule extends AbstractHookModule
     /**
      * Returns a callable that is run to configure the module
      *
-     * @param string $apiClass
+     * @param  string $apiClass
      * @return callable
      */
     final public static function configure(string $apiClass): callable

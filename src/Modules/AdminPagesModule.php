@@ -18,15 +18,18 @@ final class AdminPagesModule extends AbstractHookModule
     private array $menuItems = [];
 
     /**
-     * @param MainMenuItem[]|PredefinedMenuItem[] $menuItems
+     * @param  MainMenuItem[]|PredefinedMenuItem[] $menuItems
      * @return callable
      */
     final public static function configure(array $menuItems = []): callable
     {
         return function (AdminPagesModule $module) use ($menuItems) {
-            $filteredMenuItems = array_filter($menuItems, function ($item) {
-                return ($item instanceof MainMenuItem) || ($item instanceof PredefinedMenuItem);
-            });
+            $filteredMenuItems = array_filter(
+                $menuItems,
+                function ($item) {
+                    return ($item instanceof MainMenuItem) || ($item instanceof PredefinedMenuItem);
+                }
+            );
 
             if (count($filteredMenuItems) !== count($menuItems)) {
                 throw new InvalidArgumentException(

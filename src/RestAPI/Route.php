@@ -70,14 +70,14 @@ abstract class Route
     /**
      * Handling of the route
      *
-     * @param WP_REST_Request $request
+     * @param  WP_REST_Request $request
      * @return array|null
      */
     abstract protected function handle(WP_REST_Request $request): ?array;
     //</editor-fold>
 
     /**
-     * @param WP_REST_Request $request
+     * @param  WP_REST_Request $request
      * @return false[]
      */
     final public function handleRestRequest(WP_REST_Request $request): array

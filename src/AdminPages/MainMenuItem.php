@@ -44,7 +44,7 @@ final class MainMenuItem extends AbstractMenuItem
     }
 
     /**
-     * @param string $subMenuTitle
+     * @param  string $subMenuTitle
      * @return $this
      * @throws ObjectIsLocked
      */
@@ -65,7 +65,7 @@ final class MainMenuItem extends AbstractMenuItem
     }
 
     /**
-     * @param string $icon
+     * @param  string $icon
      * @return $this
      * @throws ObjectIsLocked
      */

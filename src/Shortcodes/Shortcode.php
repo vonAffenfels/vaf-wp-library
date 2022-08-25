@@ -28,8 +28,8 @@ abstract class Shortcode
      * Handler function for the shortcode
      * All allowed attributes are available as array
      *
-     * @param array $attributes
-     * @param string|null $content
+     * @param  array       $attributes
+     * @param  string|null $content
      * @return void
      */
     abstract public function handle(array $attributes, ?string $content = null): string;
@@ -48,9 +48,9 @@ abstract class Shortcode
     /**
      * Callback to handle the shortcode
      *
-     * @param array $attributes
-     * @param string|null $content
-     * @param string $tag
+     * @param  array       $attributes
+     * @param  string|null $content
+     * @param  string      $tag
      * @return string
      */
     final public function callback(array $attributes, ?string $content, string $tag): string

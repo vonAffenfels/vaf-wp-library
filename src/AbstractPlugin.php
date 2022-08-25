@@ -180,8 +180,8 @@ abstract class AbstractPlugin
      * Registers a module with the plugin
      * A configure function can be provided to configure the new module
      *
-     * @param string $moduleClass
-     * @param callable|null $configureFunction
+     * @param  string        $moduleClass
+     * @param  callable|null $configureFunction
      * @return $this
      * @throws InvalidModuleClass
      * @throws ModuleAlreadyRegistered
@@ -215,7 +215,7 @@ abstract class AbstractPlugin
     /**
      * Checks if a module has been registered
      *
-     * @param string $moduleClass
+     * @param  string $moduleClass
      * @return bool
      */
     final protected function hasModule(string $moduleClass): bool
@@ -226,7 +226,7 @@ abstract class AbstractPlugin
     /**
      * Returns the requested module if registered
      *
-     * @param string $moduleClass
+     * @param  string $moduleClass
      * @return AbstractModule|null
      */
     final protected function getModule(string $moduleClass): ?AbstractModule
@@ -257,8 +257,8 @@ abstract class AbstractPlugin
     /**
      * Returns the value of the requested setting
      *
-     * @param string $setting
-     * @param bool $returnObject
+     * @param  string $setting
+     * @param  bool   $returnObject
      * @return mixed
      * @throws MissingSettingKey
      * @throws ModuleNotRegistered
