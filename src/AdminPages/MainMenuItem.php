@@ -3,18 +3,21 @@
 namespace VAF\WP\Library\AdminPages;
 
 use VAF\WP\Library\Exceptions\ObjectIsLocked;
+use VAF\WP\Library\IsImmutable;
 
 final class MainMenuItem extends AbstractMenuItem
 {
-    /**
-     * @var ChildMenuItem[]
-     */
-    private array $children = [];
+    use HasChildren;
 
     /**
      * @var string
      */
     private string $subMenuTitle;
+
+    /**
+     * @var bool
+     */
+    private bool $isPredefined = false;
 
     /**
      * @var string
@@ -27,36 +30,6 @@ final class MainMenuItem extends AbstractMenuItem
 
         $this->subMenuTitle = $menuTitle;
         $this->icon = '';
-    }
-
-    /**
-     * @return bool
-     */
-    final public function hasChildren(): bool
-    {
-        return !empty($this->children);
-    }
-
-    /**
-     * @return ChildMenuItem[]
-     */
-    final public function getChildren(): array
-    {
-        return $this->children;
-    }
-
-    /**
-     * @param ChildMenuItem $child
-     * @return $this
-     * @throws ObjectIsLocked
-     */
-    final public function addChild(ChildMenuItem $child): self
-    {
-        $this->checkLock();
-
-        $child->lockObject();
-        $this->children[] = $child;
-        return $this;
     }
 
     /**
