@@ -20,6 +20,7 @@ final class SettingsModule extends AbstractModule
     {
         return function (SettingsModule $module) use ($settingsGroups) {
             foreach ($settingsGroups as $settingsGroup) {
+                $settingsGroup->lockObject();
                 $module->settingsGroups[$settingsGroup->getKey()] = $settingsGroup;
             }
         };

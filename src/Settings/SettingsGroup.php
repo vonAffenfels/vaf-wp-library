@@ -2,10 +2,13 @@
 
 namespace VAF\WP\Library\Settings;
 
-use InvalidArgumentException;
+use VAF\WP\Library\Exceptions\ObjectIsLocked;
+use VAF\WP\Library\IsImmutable;
 
 final class SettingsGroup
 {
+    use IsImmutable;
+
     /**
      * @var string Key for the settings group
      */
@@ -30,23 +33,25 @@ final class SettingsGroup
      * @param string $key
      * @param string $name
      * @param string $description
-     * @param AbstractSetting[] $settings
      */
-    final public function __construct(string $key, string $name, string $description, array $settings)
+    final public function __construct(string $key, string $name, string $description)
     {
         $this->key = $key;
         $this->name = $name;
         $this->description = $description;
+    }
 
-        foreach ($settings as $setting) {
-            if (!($setting instanceof AbstractSetting)) {
-                throw new InvalidArgumentException(
-                    'Parameter "$settings" must be an array of objects of class AbstractSetting'
-                );
-            }
+    /**
+     * @param AbstractSetting $setting
+     * @return $this
+     * @throws ObjectIsLocked
+     */
+    final public function addSetting(AbstractSetting $setting): self
+    {
+        $this->checkLock();
 
-            $this->settings[$setting->getKey()] = $setting;
-        }
+        $this->settings[$setting->getKey()] = $setting;
+        return $this;
     }
 
     final public function getSetting(string $key): ?AbstractSetting
@@ -89,5 +94,10 @@ final class SettingsGroup
     final public function getDescription(): string
     {
         return $this->description;
+    }
+
+    public function __toString(): string
+    {
+        return sprintf("[SettingsGroup %s - %s]", $this->getKey(), $this->getName());
     }
 }
