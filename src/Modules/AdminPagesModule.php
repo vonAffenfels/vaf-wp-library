@@ -7,13 +7,13 @@
 namespace VAF\WP\Library\Modules;
 
 use InvalidArgumentException;
-use VAF\WP\Library\AdminPages\MainMenuItem;
-use VAF\WP\Library\AdminPages\PredefinedMenuItem;
+use VAF\WP\Library\AdminPages\Menu\MainMenuItem;
+use VAF\WP\Library\AdminPages\Menu\PredefinedMenuItem;
 
 final class AdminPagesModule extends AbstractHookModule
 {
     /**
-     * @var MainMenuItem[]
+     * @var \VAF\WP\Library\AdminPages\Menu\MainMenuItem[]
      */
     private array $menuItems = [];
 

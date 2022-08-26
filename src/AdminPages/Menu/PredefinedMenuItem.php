@@ -4,7 +4,7 @@
  * @noinspection PhpUnused
  */
 
-namespace VAF\WP\Library\AdminPages;
+namespace VAF\WP\Library\AdminPages\Menu;
 
 use VAF\WP\Library\IsImmutable;
 
