@@ -10,6 +10,7 @@
 
 namespace VAF\WP\Library\Modules;
 
+use Closure;
 use VAF\WP\Library\Exceptions\Module\Shortcode\InvalidShortcodeClass;
 use VAF\WP\Library\Shortcodes\Shortcode;
 
@@ -19,9 +20,9 @@ final class ShortcodesModule extends AbstractModule
      * Returns a callable that is run to configure the module
      *
      * @param  array $shortcodes
-     * @return callable
+     * @return Closure
      */
-    final public static function configure(array $shortcodes): callable
+    final public static function configure(array $shortcodes): Closure
     {
         return function (ShortcodesModule $module) use ($shortcodes) {
             $module->shortcodes = $shortcodes;

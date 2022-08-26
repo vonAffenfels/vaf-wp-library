@@ -2,6 +2,7 @@
 
 namespace VAF\WP\Library\Modules;
 
+use Closure;
 use InvalidArgumentException;
 use VAF\WP\Library\Exceptions\Module\Setting\MissingSettingKey;
 use VAF\WP\Library\Exceptions\Module\Setting\SettingNotRegistered;
@@ -17,7 +18,7 @@ final class SettingsModule extends AbstractModule
      * @param  SettingsGroup[] $settingsGroups
      * @return callable
      */
-    final public static function configure(array $settingsGroups): callable
+    final public static function configure(array $settingsGroups): Closure
     {
         return function (SettingsModule $module) use ($settingsGroups) {
             $filteredMenuItems = array_filter($settingsGroups, function ($item) {

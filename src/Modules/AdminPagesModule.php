@@ -6,6 +6,7 @@
 
 namespace VAF\WP\Library\Modules;
 
+use Closure;
 use InvalidArgumentException;
 use VAF\WP\Library\AdminPages\Menu\MainMenuItem;
 use VAF\WP\Library\AdminPages\Menu\PredefinedMenuItem;
@@ -21,7 +22,7 @@ final class AdminPagesModule extends AbstractHookModule
      * @param  MainMenuItem[]|PredefinedMenuItem[] $menuItems
      * @return callable
      */
-    final public static function configure(array $menuItems = []): callable
+    final public static function configure(array $menuItems = []): Closure
     {
         return function (AdminPagesModule $module) use ($menuItems) {
             $filteredMenuItems = array_filter(
@@ -78,7 +79,7 @@ final class AdminPagesModule extends AbstractHookModule
             'manage_options',
             $menuSlug,
             function () use ($menuItem) {
-                echo $menuItem->getKey();
+                echo "PARENT MENU " . $menuItem->getKey();
             },
             $menuItem->getIcon(),
             $menuItem->getPosition()
@@ -91,7 +92,7 @@ final class AdminPagesModule extends AbstractHookModule
                 $menuItem->getSubMenuTitle(),
                 'manage_options',
                 $menuSlug,
-                '',
+                '__return_false',
                 $menuItem->getPosition()
             );
 
@@ -134,5 +135,9 @@ final class AdminPagesModule extends AbstractHookModule
                 );
             }
         }
+    }
+
+    final private function renderPage(string $pageClass, ?Closure $configureFunc = null): void
+    {
     }
 }

@@ -25,7 +25,7 @@ final class RestAPIModule extends AbstractHookModule
      * @param  string $restNamespace
      * @return callable
      */
-    final public static function configure(array $routes, string $restNamespace): callable
+    final public static function configure(array $routes, string $restNamespace): Closure
     {
         return function (RestAPIModule $module) use ($routes, $restNamespace) {
             $module->routes = $routes;

@@ -6,6 +6,7 @@
 
 namespace VAF\WP\Library\AdminPages\Menu;
 
+use Closure;
 use VAF\WP\Library\Exceptions\ObjectIsLocked;
 use VAF\WP\Library\IsImmutable;
 
@@ -34,16 +35,47 @@ abstract class AbstractMenuItem
     private ?int $position;
 
     /**
+     * @var Closure
+     */
+    private Closure $configureFunc;
+
+    /**
+     * @var string
+     */
+    private string $rendererClass;
+
+    /**
      * @param string $key
      * @param string $menuTitle
+     * @param string $rendererClass
+     * @param Closure|null $configureFunc
      */
-    public function __construct(string $key, string $menuTitle)
+    public function __construct(string $key, string $menuTitle, string $rendererClass, ?Closure $configureFunc = null)
     {
         $this->key = sanitize_key($key);
         $this->menuTitle = $menuTitle;
 
+        $this->rendererClass = $rendererClass;
+        $this->configureFunc = $configureFunc;
+
         $this->pageTitle = $menuTitle;
         $this->position = null;
+    }
+
+    /**
+     * @return Closure
+     */
+    final public function getConfigureFunc(): Closure
+    {
+        return $this->configureFunc;
+    }
+
+    /**
+     * @return string
+     */
+    final public function getRendererClass(): string
+    {
+        return $this->rendererClass;
     }
 
     /**

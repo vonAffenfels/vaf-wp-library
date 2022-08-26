@@ -10,6 +10,7 @@
 
 namespace VAF\WP\Library;
 
+use Closure;
 use VAF\WP\Library\Exceptions\Module\InvalidModuleClass;
 use VAF\WP\Library\Exceptions\Module\ModuleAlreadyRegistered;
 use VAF\WP\Library\Exceptions\Module\ModuleNotRegistered;
@@ -180,14 +181,14 @@ abstract class AbstractPlugin
      * Registers a module with the plugin
      * A configure function can be provided to configure the new module
      *
-     * @param  string        $moduleClass
-     * @param  callable|null $configureFunction
+     * @param string $moduleClass
+     * @param Closure|null $configureFunction
      * @return $this
      * @throws InvalidModuleClass
      * @throws ModuleAlreadyRegistered
      * @throws PluginAlreadyConfigured
      */
-    final protected function registerModule(string $moduleClass, ?callable $configureFunction = null): self
+    final protected function registerModule(string $moduleClass, ?Closure $configureFunction = null): self
     {
         if ($this->isConfigured) {
             // Plugin is already configured

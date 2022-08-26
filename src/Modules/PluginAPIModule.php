@@ -6,6 +6,7 @@
 
 namespace VAF\WP\Library\Modules;
 
+use Closure;
 use VAF\WP\Library\PluginAPI\AbstractPluginAPI;
 
 final class PluginAPIModule extends AbstractHookModule
@@ -16,7 +17,7 @@ final class PluginAPIModule extends AbstractHookModule
      * @param  string $apiClass
      * @return callable
      */
-    final public static function configure(string $apiClass): callable
+    final public static function configure(string $apiClass): Closure
     {
         return function (PluginAPIModule $module) use ($apiClass) {
             $module->apiClass = $apiClass;

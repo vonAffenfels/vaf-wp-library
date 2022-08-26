@@ -6,6 +6,7 @@
 
 namespace VAF\WP\Library\AdminPages\Menu;
 
+use Closure;
 use VAF\WP\Library\Exceptions\ObjectIsLocked;
 
 final class MainMenuItem extends AbstractMenuItem
@@ -27,9 +28,13 @@ final class MainMenuItem extends AbstractMenuItem
      */
     private string $icon;
 
-    final public function __construct(string $key, string $menuTitle)
-    {
-        parent::__construct($key, $menuTitle);
+    final public function __construct(
+        string $key,
+        string $menuTitle,
+        string $rendererClass,
+        ?Closure $configureFunc = null
+    ) {
+        parent::__construct($key, $menuTitle, $rendererClass, $configureFunc);
 
         $this->subMenuTitle = $menuTitle;
         $this->icon = '';
