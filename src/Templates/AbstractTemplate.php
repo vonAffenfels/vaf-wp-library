@@ -31,27 +31,13 @@ abstract class AbstractTemplate
 
     final public function setDataArray(array $data): self
     {
-        $this->data = array_merge($this->data, $data);
+        $this->data = $data;
         return $this;
     }
 
     final public function getDataArray(): array
     {
         return $this->data;
-    }
-
-    final public function getData(string $name, $default = null)
-    {
-        if (!isset($this->data[$name])) {
-            return $default;
-        }
-
-        return $this->data[$name];
-    }
-
-    final public function __get(string $name)
-    {
-        return $this->getData($name);
     }
 
     abstract public function render(): string;

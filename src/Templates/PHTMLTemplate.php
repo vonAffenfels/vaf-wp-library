@@ -10,14 +10,14 @@ final class PHTMLTemplate extends AbstractTemplate
 {
     private static array $customFunctions = [];
 
-    public function render(): string
+    final public function render(): string
     {
         ob_start();
         include($this->getTemplateFile());
         return ob_get_clean();
     }
 
-    public static function getTemplateExtension(): string
+    final public static function getTemplateExtension(): string
     {
         return 'phtml';
     }
@@ -28,7 +28,7 @@ final class PHTMLTemplate extends AbstractTemplate
      * @return void
      * @throws FunctionAlreadyRegistered
      */
-    public static function registerFunction(string $name, Closure $function): void
+    final public static function registerFunction(string $name, Closure $function): void
     {
         if (isset(self::$customFunctions[$name])) {
             throw new FunctionAlreadyRegistered($name);
@@ -43,12 +43,28 @@ final class PHTMLTemplate extends AbstractTemplate
      * @return mixed
      * @throws FunctionNotRegistered
      */
-    public function __call(string $name, array $arguments)
+    final public function __call(string $name, array $arguments)
     {
         if (!isset(self::$customFunctions[$name])) {
             throw new FunctionNotRegistered($name);
         }
 
         return call_user_func_array(self::$customFunctions[$name], $arguments);
+    }
+
+    final public function getData(string $name, $default = null)
+    {
+        $data = $this->getDataArray();
+
+        if (!isset($data[$name])) {
+            return $default;
+        }
+
+        return $data[$name];
+    }
+
+    final public function __get(string $name)
+    {
+        return $this->getData($name);
     }
 }
