@@ -6,9 +6,14 @@ use VAF\WP\Library\Exceptions\ObjectIsLocked;
 
 trait IsImmutable
 {
+    /**
+     * @var bool Determines if the object is locked
+     */
     private bool $isLocked = false;
 
     /**
+     * Locks this object
+     *
      * @return IsImmutable
      */
     final public function lockObject(): self
@@ -18,6 +23,8 @@ trait IsImmutable
     }
 
     /**
+     * Checks if the object is locked and throws an exception if so
+     *
      * @return void
      * @throws ObjectIsLocked
      */
@@ -29,6 +36,8 @@ trait IsImmutable
     }
 
     /**
+     * Abstract function that needs to be implemented to have a nice exception message
+     *
      * @return string
      */
     abstract public function __toString(): string;

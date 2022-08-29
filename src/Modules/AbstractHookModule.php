@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @package vaf-wp-library
- */
-
 namespace VAF\WP\Library\Modules;
 
 use VAF\WP\Library\Exceptions\Module\Hook\HookInvalidConfiguration;

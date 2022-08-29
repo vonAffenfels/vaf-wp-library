@@ -4,10 +4,6 @@
  * @noinspection PhpUnused
  */
 
-/**
- * @package vaf-wp-library
- */
-
 namespace VAF\WP\Library;
 
 use Closure;
@@ -19,6 +15,8 @@ use VAF\WP\Library\Exceptions\Module\Setting\SettingNotRegistered;
 use VAF\WP\Library\Exceptions\Module\Setting\SettingsGroupNotRegistered;
 use VAF\WP\Library\Exceptions\Plugin\PluginAlreadyConfigured;
 use VAF\WP\Library\Exceptions\Plugin\PluginNotConfigured;
+use VAF\WP\Library\Exceptions\Template\NamespaceNotRegistered;
+use VAF\WP\Library\Exceptions\Template\TemplateNotFound;
 use VAF\WP\Library\Modules\AbstractModule;
 use VAF\WP\Library\Modules\PluginAPIModule;
 use VAF\WP\Library\Modules\SettingsModule;
@@ -26,13 +24,13 @@ use VAF\WP\Library\PluginAPI\AbstractPluginAPI;
 
 abstract class AbstractPlugin
 {
-    //<editor-fold desc="Singleton handling">
+    //<editor-fold defaultstate="collapsed" desc="Singleton handling">
     /***********************
      * Singletone handling *
      ***********************/
 
     /**
-     * @var AbstractPlugin[]
+     * @var AbstractPlugin[] All registered plugin instances
      */
     private static array $instances = [];
 
@@ -50,6 +48,9 @@ abstract class AbstractPlugin
         return self::$instances[static::class];
     }
 
+    /**
+     * Private constructor so a plugin object can only be created once
+     */
     final private function __construct()
     {
         // Init plugin slug with something known to have something
@@ -58,7 +59,7 @@ abstract class AbstractPlugin
     }
     //</editor-fold>
 
-    //<editor-fold desc="Instance handling">
+    //<editor-fold defaultstate="collapsed" desc="Instance handling">
     /*********************
      * Instance handling *
      *********************/
@@ -84,6 +85,9 @@ abstract class AbstractPlugin
 
         $this->pluginFile = $pluginFile;
         $this->pluginSlug = basename(dirname($pluginFile));
+        $this->pluginDirectory = trailingslashit(dirname($pluginFile));
+
+        Template::registerPlugin($this);
 
         $this->configurePlugin();
 
@@ -112,14 +116,14 @@ abstract class AbstractPlugin
     }
 
     /**
-     * Function to configure additional stuff like modules
+     * Abstract function to configure additional stuff like modules
      *
      * @return $this
      */
     abstract protected function configurePlugin(): self;
     //</editor-fold>
 
-    //<editor-fold desc="Plugin Details">
+    //<editor-fold defaultstate="collapsed" desc="Plugin Details">
     /******************
      * Plugin details *
      ******************/
@@ -133,6 +137,11 @@ abstract class AbstractPlugin
      * @var string Main file of the plugin
      */
     private string $pluginFile;
+
+    /**
+     * @var string Base directory of the plugin
+     */
+    private string $pluginDirectory;
 
     /**
      * Returns the configured plugin slug
@@ -153,9 +162,19 @@ abstract class AbstractPlugin
     {
         return $this->pluginFile;
     }
+
+    /**
+     * Returns the main directory of the plugin
+     *
+     * @return string
+     */
+    final public function getPluginDirectory(): string
+    {
+        return $this->pluginDirectory;
+    }
     //</editor-fold>
 
-    //<editor-fold desc="Module handling">
+    //<editor-fold defaultstate="collapsed" desc="Module handling">
     /*******************
      * Module handling *
      *******************/
@@ -181,8 +200,8 @@ abstract class AbstractPlugin
      * Registers a module with the plugin
      * A configure function can be provided to configure the new module
      *
-     * @param string $moduleClass
-     * @param Closure|null $configureFunction
+     * @param  string $moduleClass Class of the module to register
+     * @param  Closure|null $configureFunction Configuration function to set special parameters for the module
      * @return $this
      * @throws InvalidModuleClass
      * @throws ModuleAlreadyRegistered
@@ -216,7 +235,7 @@ abstract class AbstractPlugin
     /**
      * Checks if a module has been registered
      *
-     * @param  string $moduleClass
+     * @param  string $moduleClass Class of the module to check
      * @return bool
      */
     final protected function hasModule(string $moduleClass): bool
@@ -227,7 +246,7 @@ abstract class AbstractPlugin
     /**
      * Returns the requested module if registered
      *
-     * @param  string $moduleClass
+     * @param  string $moduleClass Class of the requested module
      * @return AbstractModule|null
      */
     final protected function getModule(string $moduleClass): ?AbstractModule
@@ -236,6 +255,7 @@ abstract class AbstractPlugin
     }
     //</editor-fold>
 
+    //<editor-fold desc="Utility functions" defaultstate="collapsed">
     /**
      * Returns an instance of the plugin API
      *
@@ -258,8 +278,8 @@ abstract class AbstractPlugin
     /**
      * Returns the value of the requested setting
      *
-     * @param  string $setting
-     * @param  bool   $returnObject
+     * @param  string $setting Setting to get
+     * @param  bool   $returnObject If true returns the setting object instead of the value (Default: false)
      * @return mixed
      * @throws MissingSettingKey
      * @throws ModuleNotRegistered
@@ -278,4 +298,20 @@ abstract class AbstractPlugin
 
         return $module->getSetting($setting, $returnObject);
     }
+
+    /**
+     * Renders a template. The plugin namespace will automatically attached
+     *
+     * @param  string $template Template to render
+     * @param  array $context Data to provide for the template
+     * @return void
+     * @throws NamespaceNotRegistered
+     * @throws TemplateNotFound
+     */
+    final public function renderTemplate(string $template, array $context = [])
+    {
+        $namespace = Helper::camelize($this->getPluginSlug());
+        Template::render($namespace . '/' . $template, $context);
+    }
+    //</editor-fold>
 }

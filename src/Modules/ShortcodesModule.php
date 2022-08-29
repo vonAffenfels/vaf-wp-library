@@ -4,10 +4,6 @@
  * @noinspection PhpUnused
  */
 
-/**
- * @package vaf-wp-library
- */
-
 namespace VAF\WP\Library\Modules;
 
 use Closure;
@@ -32,7 +28,7 @@ final class ShortcodesModule extends AbstractModule
     /**
      * @var string[] Shortcode classes to register
      */
-    private array $shortcodes;
+    private array $shortcodes = [];
 
     /**
      * @return void
@@ -61,7 +57,10 @@ final class ShortcodesModule extends AbstractModule
 
         add_shortcode(
             $shortcode->getShortcode(),
-            function (array $attributes, ?string $content, string $tag) use ($shortcode): string {
+            function ($attributes, ?string $content, string $tag) use ($shortcode): string {
+                if (!is_array($attributes)) {
+                    $attributes = [];
+                }
                 return $shortcode->callback($attributes, $content, $tag);
             }
         );
