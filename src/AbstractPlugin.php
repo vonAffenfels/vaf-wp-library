@@ -19,6 +19,8 @@ use VAF\WP\Library\Exceptions\Module\Setting\SettingNotRegistered;
 use VAF\WP\Library\Exceptions\Module\Setting\SettingsGroupNotRegistered;
 use VAF\WP\Library\Exceptions\Plugin\PluginAlreadyConfigured;
 use VAF\WP\Library\Exceptions\Plugin\PluginNotConfigured;
+use VAF\WP\Library\Exceptions\Template\NamespaceNotRegistered;
+use VAF\WP\Library\Exceptions\Template\TemplateNotFound;
 use VAF\WP\Library\Modules\AbstractModule;
 use VAF\WP\Library\Modules\PluginAPIModule;
 use VAF\WP\Library\Modules\SettingsModule;
@@ -26,7 +28,7 @@ use VAF\WP\Library\PluginAPI\AbstractPluginAPI;
 
 abstract class AbstractPlugin
 {
-    //<editor-fold desc="Singleton handling">
+    //<editor-fold defaultstate="collapsed" desc="Singleton handling">
     /***********************
      * Singletone handling *
      ***********************/
@@ -58,7 +60,7 @@ abstract class AbstractPlugin
     }
     //</editor-fold>
 
-    //<editor-fold desc="Instance handling">
+    //<editor-fold defaultstate="collapsed" desc="Instance handling">
     /*********************
      * Instance handling *
      *********************/
@@ -84,6 +86,9 @@ abstract class AbstractPlugin
 
         $this->pluginFile = $pluginFile;
         $this->pluginSlug = basename(dirname($pluginFile));
+        $this->pluginDirectory = trailingslashit(dirname($pluginFile));
+
+        Template::registerPlugin($this);
 
         $this->configurePlugin();
 
@@ -119,7 +124,7 @@ abstract class AbstractPlugin
     abstract protected function configurePlugin(): self;
     //</editor-fold>
 
-    //<editor-fold desc="Plugin Details">
+    //<editor-fold defaultstate="collapsed" desc="Plugin Details">
     /******************
      * Plugin details *
      ******************/
@@ -133,6 +138,11 @@ abstract class AbstractPlugin
      * @var string Main file of the plugin
      */
     private string $pluginFile;
+
+    /**
+     * @var string Base directory of the plugin
+     */
+    private string $pluginDirectory;
 
     /**
      * Returns the configured plugin slug
@@ -153,9 +163,14 @@ abstract class AbstractPlugin
     {
         return $this->pluginFile;
     }
+
+    final public function getPluginDirectory(): string
+    {
+        return $this->pluginDirectory;
+    }
     //</editor-fold>
 
-    //<editor-fold desc="Module handling">
+    //<editor-fold defaultstate="collapsed" desc="Module handling">
     /*******************
      * Module handling *
      *******************/
@@ -277,5 +292,18 @@ abstract class AbstractPlugin
         $module = $this->getModule(SettingsModule::class);
 
         return $module->getSetting($setting, $returnObject);
+    }
+
+    /**
+     * @param string $template
+     * @param array $context
+     * @return void
+     * @throws NamespaceNotRegistered
+     * @throws TemplateNotFound
+     */
+    final public function render(string $template, array $context = [])
+    {
+        $namespace = Helper::camelize($this->getPluginSlug());
+        Template::render($namespace . '/' . $template, $context);
     }
 }

@@ -5,10 +5,6 @@
  * @noinspection PhpUnusedParameterInspection
  */
 
-/**
- * @package vaf-wp-library
- */
-
 namespace VAF\WP\Library\Modules;
 
 use Closure;

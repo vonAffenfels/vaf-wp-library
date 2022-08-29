@@ -14,4 +14,23 @@ final class Helper
     {
         return preg_replace('/[^A-Za-z0-9_\-]/', '', $value);
     }
+
+    final public static function camelize($input, $seperator = '-'): string
+    {
+        return str_replace($seperator, '', ucwords($input, $seperator));
+    }
+
+    final public static function implodeWithLast(array $data, string $glue, string $lastGlue): string
+    {
+        if (count($data) === 0) {
+            return '';
+        }
+
+        if (count($data) === 1) {
+            return $data[0];
+        }
+
+        $lastPart = array_pop($data);
+        return implode($glue, $data) . $lastGlue . $lastPart;
+    }
 }

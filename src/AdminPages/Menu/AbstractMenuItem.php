@@ -35,9 +35,9 @@ abstract class AbstractMenuItem
     private ?int $position;
 
     /**
-     * @var Closure
+     * @var Closure|null
      */
-    private Closure $configureFunc;
+    private ?Closure $configureFunc;
 
     /**
      * @var string
@@ -50,7 +50,7 @@ abstract class AbstractMenuItem
      * @param string $rendererClass
      * @param Closure|null $configureFunc
      */
-    public function __construct(string $key, string $menuTitle, string $rendererClass, ?Closure $configureFunc = null)
+    public function __construct(string $key, string $menuTitle, string $rendererClass = '', ?Closure $configureFunc = null)
     {
         $this->key = sanitize_key($key);
         $this->menuTitle = $menuTitle;

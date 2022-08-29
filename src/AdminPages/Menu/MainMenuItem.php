@@ -31,7 +31,7 @@ final class MainMenuItem extends AbstractMenuItem
     final public function __construct(
         string $key,
         string $menuTitle,
-        string $rendererClass,
+        string $rendererClass = '',
         ?Closure $configureFunc = null
     ) {
         parent::__construct($key, $menuTitle, $rendererClass, $configureFunc);
