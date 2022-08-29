@@ -8,8 +8,16 @@ use VAF\WP\Library\Exceptions\Template\FunctionNotRegistered;
 
 final class PHTMLTemplate extends AbstractTemplate
 {
+    /**
+     * @var array Registered custom functions
+     */
     private static array $customFunctions = [];
 
+    /**
+     * Renders a .phtml file and returns the output
+     *
+     * @return string
+     */
     final public function render(): string
     {
         ob_start();
@@ -17,14 +25,21 @@ final class PHTMLTemplate extends AbstractTemplate
         return ob_get_clean();
     }
 
+    /**
+     * Returns the extension (without a dot) that this engine does handle
+     *
+     * @return string
+     */
     final public static function getTemplateExtension(): string
     {
         return 'phtml';
     }
 
     /**
-     * @param string $name
-     * @param Closure $function
+     * Registers a custom function with this engine
+     *
+     * @param  string $name Name of the function
+     * @param  Closure $function The function itself
      * @return void
      * @throws FunctionAlreadyRegistered
      */
@@ -38,8 +53,11 @@ final class PHTMLTemplate extends AbstractTemplate
     }
 
     /**
-     * @param string $name
-     * @param array $arguments
+     * Will get called if an unknown function is called
+     * Checks if it is a registered custom function and calls it
+     *
+     * @param  string $name Name of the function that got called
+     * @param  array $arguments List of arguments passed to the function
      * @return mixed
      * @throws FunctionNotRegistered
      */
@@ -52,6 +70,14 @@ final class PHTMLTemplate extends AbstractTemplate
         return call_user_func_array(self::$customFunctions[$name], $arguments);
     }
 
+    /**
+     * Getter for a specific data key
+     * If the key is not found will return the default provided
+     *
+     * @param  string $name Name of the data to get
+     * @param  mixed $default Default value if the data is not found
+     * @return mixed
+     */
     final public function getData(string $name, $default = null)
     {
         $data = $this->getDataArray();
@@ -63,6 +89,13 @@ final class PHTMLTemplate extends AbstractTemplate
         return $data[$name];
     }
 
+    /**
+     * Magic function that gets called if a property is not found inside the class
+     * Will call getData() function with a default of null
+     *
+     * @param  string $name Name of the property that got accessed
+     * @return mixed|null
+     */
     final public function __get(string $name)
     {
         return $this->getData($name);

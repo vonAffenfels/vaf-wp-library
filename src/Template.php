@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @noinspection PhpUnused
+ */
+
 namespace VAF\WP\Library;
 
 use Closure;
@@ -27,10 +31,14 @@ final class Template
     private static array $engines = [];
 
     /**
+     * Initializing the complete template system on demand
+     * Is needed to register library namespace and PHTML engine
+     *
      * @return void
      */
     final private static function initialize(): void
     {
+        // Do nothing if already initialized
         if (self::$initialized) {
             return;
         }
@@ -45,13 +53,14 @@ final class Template
     }
 
     /**
-     * Registers the namespace for a plugin
+     * Registers the namespace for a plugin and adds all necessary directories
      *
-     * @param AbstractPlugin $plugin
+     * @param  AbstractPlugin $plugin Plugin to register
      * @return void
      */
     final public static function registerPlugin(AbstractPlugin $plugin): void
     {
+        // Make sure we are initialized
         self::initialize();
 
         $pluginNamespace = Helper::camelize($plugin->getPluginSlug());
@@ -69,7 +78,10 @@ final class Template
         $baseThemeDirectory = trailingslashit(get_template_directory());
         $childThemeDirectory = trailingslashit(get_stylesheet_directory());
 
+        // Add parent theme template directory to the top of the list
         array_unshift($namespacePaths, $baseThemeDirectory . $themeSuffixDirectory);
+
+        // If we have a child theme then we will add its template directory at the top most position
         if ($baseThemeDirectory !== $childThemeDirectory) {
             array_unshift($namespacePaths, $childThemeDirectory . $themeSuffixDirectory);
         }
@@ -77,6 +89,16 @@ final class Template
         self::$namespaces[$pluginNamespace] = $namespacePaths;
     }
 
+    /**
+     * Registers a custom function with all registered namespaces
+     * @todo
+     *  Maybe build it so that if we register a new engine afterwards all
+     *  registered functions get also registered with the new engine
+     *
+     * @param  string $name Name of the custom function
+     * @param  Closure $function The function itself
+     * @return void
+     */
     final public static function registerFunction(string $name, Closure $function)
     {
         foreach (self::$engines as $engine) {
@@ -85,16 +107,22 @@ final class Template
     }
 
     /**
-     * @param string $template
-     * @param array $context
-     * @param bool $echo
+     * Renders a template
+     *
+     * @param  string $template The template to render. First part should be the namespace
+     * @param  array $context All the data that should be known to the template
+     * @param  bool $echo If true will echo the result (Default: true)
      * @return string
      * @throws NamespaceNotRegistered
      * @throws InvalidArgumentException
      * @throws TemplateNotFound
      */
-    final public static function render(string $template, array $context, bool $echo = true): string
+    final public static function render(string $template, array $context = [], bool $echo = true): string
     {
+        // Make sure we are initialized
+        self::initialize();
+
+        // Check if we have a namespace and template
         $templateParts = explode('/', $template);
         if (count($templateParts) < 2) {
             throw new InvalidArgumentException(
@@ -128,6 +156,7 @@ final class Template
             throw new TemplateNotFound($template, self::$namespaces[$namespace]);
         }
 
+        // Create template object and let it render
         /** @var AbstractTemplate $templateObj */
         $templateObj = new $engine($templateFile);
         $templateObj->setDataArray($context);
