@@ -13,6 +13,9 @@ use VAF\WP\Library\Exceptions\Module\AdminPage\ParentMenuNotFound;
 
 final class AdminPagesModule extends AbstractHookModule
 {
+    /**
+     * List of predefined menu item slugs
+     */
     public const PREDEFINED_MENU_MEDIA = 'upload.php';
     public const PREDEFINED_MENU_COMMENTS = 'edit-comments.php';
     public const PREDEFINED_MENU_POSTS = 'edit.php';
@@ -30,7 +33,7 @@ final class AdminPagesModule extends AbstractHookModule
     private Closure $menuItemCreator;
 
     /**
-     * @param  Closure $menuItemCreator
+     * @param  Closure $menuItemCreator Closure function that is run at the right time to register menu items
      * @return callable
      */
     final public static function configure(Closure $menuItemCreator): Closure
@@ -40,6 +43,11 @@ final class AdminPagesModule extends AbstractHookModule
         };
     }
 
+    /**
+     * Register all hooks needed
+     *
+     * @return Closure[]
+     */
     final protected function getHooks(): array
     {
         return [
@@ -49,6 +57,12 @@ final class AdminPagesModule extends AbstractHookModule
         ];
     }
 
+    /**
+     * Adds a new top level menu item with all children
+     *
+     * @param MainMenuItem $menuItem Menu item to add
+     * @return void
+     */
     final public function addMenuItem(MainMenuItem $menuItem): void
     {
         $menuSlug = $this->getPlugin()->getPluginSlug();
@@ -98,8 +112,10 @@ final class AdminPagesModule extends AbstractHookModule
     }
 
     /**
-     * @param string $slug
-     * @param ChildMenuItem $child
+     * Adds a new child menu item to an existing menu item which our plugin didn't created
+     *
+     * @param string $slug Slug of the top level menu item
+     * @param ChildMenuItem $child Child to add
      * @return void
      * @throws ParentMenuNotFound
      */
@@ -126,6 +142,12 @@ final class AdminPagesModule extends AbstractHookModule
         );
     }
 
+    /**
+     * Function to check if the slug provided is already registered as a top level menu item
+     *
+     * @param string $slug
+     * @return bool
+     */
     final private function hasParentMenu(string $slug): bool
     {
         global $menu;
