@@ -308,10 +308,29 @@ abstract class AbstractPlugin
      * @throws NamespaceNotRegistered
      * @throws TemplateNotFound
      */
-    final public function renderTemplate(string $template, array $context = [])
+    final public function renderTemplate(string $template, array $context = []): string
     {
         $namespace = Helper::camelize($this->getPluginSlug());
-        Template::render($namespace . '/' . $template, $context);
+        return Template::render($namespace . '/' . $template, $context);
+    }
+
+    /**
+     * @param string $template
+     * @param array $context
+     * @return void
+     * @throws NamespaceNotRegistered
+     * @throws TemplateNotFound
+     */
+    final public function outputTemplate(string $template, array $context = [])
+    {
+        $namespace = Helper::camelize($this->getPluginSlug());
+
+        // Add plugin namespace to template if not found
+        if (strpos($template, $namespace) === false) {
+            $template = $namespace . '/' . $template;
+        }
+
+        Template::output($template, $context);
     }
     //</editor-fold>
 }

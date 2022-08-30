@@ -7,6 +7,8 @@
 namespace VAF\WP\Library\AdminPages\Menu;
 
 use Closure;
+use InvalidArgumentException;
+use VAF\WP\Library\AdminPages\Renderer\AbstractRenderer;
 use VAF\WP\Library\Exceptions\ObjectIsLocked;
 use VAF\WP\Library\IsImmutable;
 
@@ -60,6 +62,14 @@ abstract class AbstractMenuItem
     ) {
         $this->key = sanitize_key($key);
         $this->menuTitle = $menuTitle;
+
+        if (!is_subclass_of($rendererClass, AbstractRenderer::class)) {
+            throw new InvalidArgumentException(sprintf(
+                'Parameter "$rendererClass" must be a classname that extends %s. Class %s provided.',
+                AbstractRenderer::class,
+                $rendererClass
+            ));
+        }
 
         $this->rendererClass = $rendererClass;
         $this->configureFunc = $configureFunc;

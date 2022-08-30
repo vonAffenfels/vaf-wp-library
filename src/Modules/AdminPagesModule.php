@@ -7,8 +7,10 @@
 namespace VAF\WP\Library\Modules;
 
 use Closure;
+use VAF\WP\Library\AdminPages\Menu\AbstractMenuItem;
 use VAF\WP\Library\AdminPages\Menu\ChildMenuItem;
 use VAF\WP\Library\AdminPages\Menu\MainMenuItem;
+use VAF\WP\Library\AdminPages\Renderer\AbstractRenderer;
 use VAF\WP\Library\Exceptions\Module\AdminPage\ParentMenuNotFound;
 
 final class AdminPagesModule extends AbstractHookModule
@@ -76,7 +78,7 @@ final class AdminPagesModule extends AbstractHookModule
             'manage_options',
             $menuSlug,
             function () use ($menuItem) {
-                echo "PARENT MENU " . $menuItem->getKey();
+                $this->renderPage($menuItem);
             },
             $menuItem->getIcon(),
             $menuItem->getPosition()
@@ -103,7 +105,7 @@ final class AdminPagesModule extends AbstractHookModule
                     'manage_options',
                     $menuSlug . '-' . $child->getKey(),
                     function () use ($child) {
-                        echo "SUB MENU " . $child->getKey();
+                        $this->renderPage($child);
                     },
                     $child->getPosition()
                 );
@@ -136,10 +138,28 @@ final class AdminPagesModule extends AbstractHookModule
             'manage_options',
             $menuSlug . '-' . $child->getKey(),
             function () use ($child) {
-                echo "SUB MENU " . $child->getKey();
+                $this->renderPage($child);
             },
             $child->getPosition()
         );
+    }
+
+    /**
+     * @param  AbstractMenuItem $menuItem
+     * @return void
+     */
+    final private function renderPage(AbstractMenuItem $menuItem): void
+    {
+        $class = $menuItem->getRendererClass();
+        $configureFunction = $menuItem->getConfigureFunc();
+
+        /** @var AbstractRenderer $rendererObject */
+        $rendererObject = new $class($this->getPlugin());
+        if (is_callable($configureFunction)) {
+            $configureFunction($rendererObject);
+        }
+
+        echo $rendererObject->render();
     }
 
     /**
@@ -157,9 +177,5 @@ final class AdminPagesModule extends AbstractHookModule
         });
 
         return !empty($parentMenuArr);
-    }
-
-    final private function renderPage(string $pageClass, ?Closure $configureFunc = null): void
-    {
     }
 }

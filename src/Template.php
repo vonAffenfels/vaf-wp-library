@@ -111,13 +111,12 @@ final class Template
      *
      * @param  string $template The template to render. First part should be the namespace
      * @param  array $context All the data that should be known to the template
-     * @param  bool $echo If true will echo the result (Default: true)
      * @return string
      * @throws NamespaceNotRegistered
      * @throws InvalidArgumentException
      * @throws TemplateNotFound
      */
-    final public static function render(string $template, array $context = [], bool $echo = true): string
+    final public static function render(string $template, array $context = []): string
     {
         // Make sure we are initialized
         self::initialize();
@@ -160,12 +159,18 @@ final class Template
         /** @var AbstractTemplate $templateObj */
         $templateObj = new $engine($templateFile);
         $templateObj->setDataArray($context);
-        $result = $templateObj->render();
+        return $templateObj->render();
+    }
 
-        if ($echo) {
-            echo $result;
-        }
-
-        return $result;
+    /**
+     * @param string $template
+     * @param array $context
+     * @return void
+     * @throws NamespaceNotRegistered
+     * @throws TemplateNotFound
+     */
+    final public static function output(string $template, array $context = []): void
+    {
+        echo self::render($template, $context);
     }
 }
