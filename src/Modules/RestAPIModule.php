@@ -24,7 +24,14 @@ final class RestAPIModule extends AbstractHookModule
     final public static function configure(array $routes, string $restNamespace): Closure
     {
         return function (RestAPIModule $module) use ($routes, $restNamespace) {
-            $module->routes = $routes;
+            foreach ($routes as $route) {
+                if (!is_subclass_of($route, RestAPIModule::class)) {
+                    throw new InvalidRouteClass($this->getPlugin(), $route);
+                }
+
+                $module->routes[] = $route;
+            }
+
             $module->restNamespace = $restNamespace;
         };
     }
@@ -53,15 +60,8 @@ final class RestAPIModule extends AbstractHookModule
         ];
     }
 
-    /**
-     * @throws InvalidRouteClass
-     */
     private function registerRestRoute(string $classname): void
     {
-        if (!is_subclass_of($classname, Route::class)) {
-            throw new InvalidRouteClass($this->getPlugin(), $classname);
-        }
-
         /** @var Route $route */
         $route = new $classname();
 

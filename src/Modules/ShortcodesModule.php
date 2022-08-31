@@ -21,7 +21,13 @@ final class ShortcodesModule extends AbstractModule
     final public static function configure(array $shortcodes): Closure
     {
         return function (ShortcodesModule $module) use ($shortcodes) {
-            $module->shortcodes = $shortcodes;
+            foreach ($shortcodes as $shortcode) {
+                if (!is_subclass_of($shortcode, Shortcode::class)) {
+                    throw new InvalidShortcodeClass($this->getPlugin(), $shortcode);
+                }
+
+                $module->shortcodes[] = $shortcode;
+            }
         };
     }
 
@@ -32,7 +38,6 @@ final class ShortcodesModule extends AbstractModule
 
     /**
      * @return void
-     * @throws InvalidShortcodeClass
      */
     public function start(): void
     {
@@ -44,14 +49,9 @@ final class ShortcodesModule extends AbstractModule
     /**
      * @param  string $classname
      * @return void
-     * @throws InvalidShortcodeClass
      */
     final private function registerShortcode(string $classname): void
     {
-        if (!is_subclass_of($classname, Shortcode::class)) {
-            throw new InvalidShortcodeClass($this->getPlugin(), $classname);
-        }
-
         /** @var Shortcode $shortcode */
         $shortcode = new $classname();
 

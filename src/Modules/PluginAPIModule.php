@@ -7,6 +7,7 @@
 namespace VAF\WP\Library\Modules;
 
 use Closure;
+use VAF\WP\Library\Exceptions\Module\PluginAPI\InvalidAPIClass;
 use VAF\WP\Library\PluginAPI\AbstractPluginAPI;
 
 final class PluginAPIModule extends AbstractHookModule
@@ -20,6 +21,10 @@ final class PluginAPIModule extends AbstractHookModule
     final public static function configure(string $apiClass): Closure
     {
         return function (PluginAPIModule $module) use ($apiClass) {
+            if (!is_subclass_of($apiClass, AbstractPluginAPI::class)) {
+                throw new InvalidAPIClass($this->getPlugin(), $apiClass);
+            }
+
             $module->apiClass = $apiClass;
         };
     }
