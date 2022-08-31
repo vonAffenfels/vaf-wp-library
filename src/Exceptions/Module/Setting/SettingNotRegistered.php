@@ -16,7 +16,7 @@ final class SettingNotRegistered extends Exception
         Throwable $previous = null
     ) {
         $message = sprintf(
-            '[Plugin %s] Setting "%s" is not registered in settingsgroup "%s"!',
+            '[Plugin %s] [Module Setting] Setting "%s" is not registered in settingsgroup "%s"!',
             $plugin->getPluginSlug(),
             $setting,
             $settingsGroup->getKey()

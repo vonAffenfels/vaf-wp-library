@@ -11,7 +11,7 @@ final class SettingsGroupNotRegistered extends Exception
     public function __construct(AbstractPlugin $plugin, string $settingsGroup, Throwable $previous = null)
     {
         $message = sprintf(
-            '[Plugin %s] Settingsgroup "%s" is not registered!',
+            '[Plugin %s] [Module Setting] Settingsgroup "%s" is not registered!',
             $plugin->getPluginSlug(),
             $settingsGroup
         );

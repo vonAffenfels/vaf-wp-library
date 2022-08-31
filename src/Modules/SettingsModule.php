@@ -9,9 +9,9 @@ use VAF\WP\Library\Exceptions\Module\Setting\SettingNotRegistered;
 use VAF\WP\Library\Exceptions\Module\Setting\SettingsGroupNotRegistered;
 use VAF\WP\Library\Settings\SettingsGroup;
 
-final class SettingsModule extends AbstractHookModule
+final class SettingsModule extends AbstractModule
 {
-    //<editor-fold desc="Configure functions">
+    //<editor-fold defaulstate="collapsed" desc="Configure functions">
     /**
      * Returns a callable that is run to configure the module
      *
@@ -44,10 +44,9 @@ final class SettingsModule extends AbstractHookModule
     }
     //</editor-fold>
 
-    //<editor-fold desc="Module management">
-    final protected function getHooks(): array
+    //<editor-fold defaulstate="collapsed" desc="Module management">
+    final public function start(): void
     {
-        return [];
     }
     //</editor-fold>
 

@@ -11,7 +11,7 @@ final class ParentMenuNotFound extends Exception
     final public function __construct(AbstractPlugin $plugin, string $parentSlug, Throwable $previous = null)
     {
         $message = sprintf(
-            '[Plugin %s] Parent menu with slug "%s" could not be found!',
+            '[Plugin %s] [Module AdminPages] Parent menu with slug "%s" could not be found!',
             $plugin->getPluginSlug(),
             $parentSlug
         );
