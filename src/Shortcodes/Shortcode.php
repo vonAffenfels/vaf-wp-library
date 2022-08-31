@@ -4,15 +4,11 @@
  * @noinspection PhpUnused
  */
 
-/**
- * @package vaf-wp-library
- */
-
 namespace VAF\WP\Library\Shortcodes;
 
 abstract class Shortcode
 {
-    //<editor-fold desc="Abstract function definition">
+    //<editor-fold defaultstate="collapsed" desc="Abstract function definition">
     /********************************
      * Abstract function definition *
      ********************************/
@@ -44,7 +40,7 @@ abstract class Shortcode
     abstract protected function getAttributes(): array;
     //</editor-fold>
 
-    //<editor-fold desc="Callback">
+    //<editor-fold defaultstate="collapsed" desc="Callback">
     /**
      * Callback to handle the shortcode
      *
