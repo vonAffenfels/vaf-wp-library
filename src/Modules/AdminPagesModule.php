@@ -133,17 +133,6 @@ final class AdminPagesModule extends AbstractHookModule
         }
     }
 
-    final private function registerChildMenuItem(AdminPage $page): bool
-    {
-        $menuItem = $page->getMenu();
-        $parent = $menuItem->getParent();
-        $slugPrefix = $this->getPlugin()->getPluginSlug() . '-';
-
-
-
-        return true;
-    }
-
     /**
      * Function to check if the slug provided is already registered as a top level menu item
      *
