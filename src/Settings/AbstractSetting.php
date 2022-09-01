@@ -9,7 +9,7 @@ abstract class AbstractSetting
     /**
      * @var string
      */
-    private string $key;
+    private string $slug;
 
     /**
      * @var mixed
@@ -26,15 +26,15 @@ abstract class AbstractSetting
      */
     private $default;
 
-    final public function __construct(string $key, $default = null)
+    final public function __construct(string $slug, $default = null)
     {
-        $this->key = Helper::sanitizeKey($key);
+        $this->slug = Helper::sanitizeKey($slug);
         $this->default = $default;
     }
 
-    final public function getKey(): string
+    final public function getSlug(): string
     {
-        return $this->key;
+        return $this->slug;
     }
 
     final public function isLoaded(): bool

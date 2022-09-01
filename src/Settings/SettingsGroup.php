@@ -1,32 +1,22 @@
 <?php
 
-/**
- * @noinspection PhpUnused
- */
-
 namespace VAF\WP\Library\Settings;
 
-use VAF\WP\Library\Exceptions\ObjectIsLocked;
-use VAF\WP\Library\IsImmutable;
+use VAF\WP\Library\AbstractPlugin;
+use VAF\WP\Library\Exceptions\Module\Setting\SettingNotRegistered;
+use VAF\WP\Library\Exceptions\Module\Setting\SettingsGroupAlreadyRegistered;
+use VAF\WP\Library\Exceptions\Module\Setting\SettingsGroupNotRegistered;
 
-final class SettingsGroup
+abstract class SettingsGroup
 {
-    use IsImmutable;
+    abstract public function getSlug(): string;
+    abstract public function getTitle(): string;
+    abstract public function getDescription(): string;
+    abstract public function registerSettings(): void;
 
-    /**
-     * @var string Key for the settings group
-     */
-    private string $key;
+    private array $values = [];
 
-    /**
-     * @var string Name to display
-     */
-    private string $name;
-
-    /**
-     * @var string Additional description
-     */
-    private string $description;
+    private bool $isLoaded = false;
 
     /**
      * @var AbstractSetting[] Settings of the settingsgroup
@@ -34,74 +24,104 @@ final class SettingsGroup
     private array $settings;
 
     /**
-     * @param string $key
-     * @param string $name
-     * @param string $description
+     * @var SettingsGroup[]
      */
-    final public function __construct(string $key, string $name, string $description)
+    private static array $instances = [];
+
+    private AbstractPlugin $plugin;
+
+    /**
+     * @param  AbstractPlugin $plugin
+     * @throws SettingsGroupAlreadyRegistered
+     */
+    final public function __construct(AbstractPlugin $plugin)
     {
-        $this->key = $key;
-        $this->name = $name;
-        $this->description = $description;
+        $className = get_class($this);
+        if (isset(self::$instances[$className])) {
+            throw new SettingsGroupAlreadyRegistered($plugin, $this->getSlug());
+        }
+
+        self::$instances[$className] = $this;
+
+        $this->plugin = $plugin;
+        $this->registerSettings();
+    }
+
+    /**
+     * @return SettingsGroup
+     * @throws SettingsGroupNotRegistered
+     */
+    final protected static function getInstance(): SettingsGroup
+    {
+        if (!isset(self::$instances[static::class])) {
+            throw new SettingsGroupNotRegistered(null, static::class);
+        }
+        return self::$instances[static::class];
+    }
+
+    final private function getPlugin(): AbstractPlugin
+    {
+        return $this->plugin;
+    }
+
+    final private function loadValues(): void
+    {
+        $this->values = get_option(
+            $this->getPlugin()->getPluginSlug() . '-' . $this->getSlug(),
+            []
+        );
+        $this->isLoaded = true;
     }
 
     /**
      * @param  AbstractSetting $setting
      * @return $this
-     * @throws ObjectIsLocked
      */
     final public function addSetting(AbstractSetting $setting): self
     {
-        $this->checkLock();
-
-        $this->settings[$setting->getKey()] = $setting;
+        $this->settings[$setting->getSlug()] = $setting;
         return $this;
     }
 
-    final public function getSetting(string $key): ?AbstractSetting
+    final public function getSetting(string $slug): ?AbstractSetting
     {
-        if (!$this->hasSetting($key)) {
+        if (!$this->hasSetting($slug)) {
             return null;
         }
 
-        return $this->settings[$key];
+        return $this->settings[$slug];
     }
 
     /**
-     * @param  string $key
+     * @param  string $slug
      * @return bool
      */
-    final public function hasSetting(string $key): bool
+    final public function hasSetting(string $slug): bool
     {
-        return isset($this->settings[$key]);
+        return isset($this->settings[$slug]);
     }
 
     /**
-     * @return string
+     * @param  string $setting
+     * @return mixed
+     * @throws SettingNotRegistered
      */
-    final public function getKey(): string
+    final public function getValue(string $setting)
     {
-        return $this->key;
-    }
+        if (!$this->hasSetting($setting)) {
+            throw new SettingNotRegistered($this->getPlugin(), $this, $setting);
+        }
 
-    /**
-     * @return string
-     */
-    final public function getName(): string
-    {
-        return $this->name;
-    }
+        // Load values from database if not already loaded
+        if (!$this->isLoaded) {
+            $this->loadValues();
+        }
 
-    /**
-     * @return string
-     */
-    final public function getDescription(): string
-    {
-        return $this->description;
-    }
+        $setting = $this->getSetting($setting);
+        if (!$setting->isLoaded()) {
+            $setting->loadValue($this->values[$setting->getSlug()] ?? null);
+        }
 
-    public function __toString(): string
-    {
-        return sprintf("[SettingsGroup %s - %s]", $this->getKey(), $this->getName());
+        return $setting->getValue();
     }
 }

@@ -10,16 +10,10 @@ use Closure;
 use VAF\WP\Library\Exceptions\Module\InvalidModuleClass;
 use VAF\WP\Library\Exceptions\Module\ModuleAlreadyRegistered;
 use VAF\WP\Library\Exceptions\Module\ModuleNotRegistered;
-use VAF\WP\Library\Exceptions\Module\Setting\MissingSettingKey;
-use VAF\WP\Library\Exceptions\Module\Setting\SettingNotRegistered;
-use VAF\WP\Library\Exceptions\Module\Setting\SettingsGroupNotRegistered;
 use VAF\WP\Library\Exceptions\Plugin\PluginAlreadyConfigured;
 use VAF\WP\Library\Exceptions\Plugin\PluginNotConfigured;
-use VAF\WP\Library\Exceptions\Template\NamespaceNotRegistered;
-use VAF\WP\Library\Exceptions\Template\TemplateNotFound;
 use VAF\WP\Library\Modules\AbstractModule;
 use VAF\WP\Library\Modules\PluginAPIModule;
-use VAF\WP\Library\Modules\SettingsModule;
 use VAF\WP\Library\PluginAPI\AbstractPluginAPI;
 
 abstract class AbstractPlugin
@@ -273,30 +267,6 @@ abstract class AbstractPlugin
         $module = $this->getModule(PluginAPIModule::class);
 
         return $module->getPluginAPI();
-    }
-
-    /**
-     * Returns the value of the requested setting
-     *
-     * @param  string $setting Setting to get
-     * @param  bool   $returnObject If true returns the setting object instead of the value (Default: false)
-     * @return mixed
-     * @throws MissingSettingKey
-     * @throws ModuleNotRegistered
-     * @throws SettingNotRegistered
-     * @throws SettingsGroupNotRegistered
-     */
-    final public function getSetting(string $setting, bool $returnObject = false)
-    {
-        if (!$this->hasModule(SettingsModule::class)) {
-            // Module Settings is not registered
-            throw new ModuleNotRegistered($this, 'Settings');
-        }
-
-        /** @var SettingsModule $module */
-        $module = $this->getModule(SettingsModule::class);
-
-        return $module->getSetting($setting, $returnObject);
     }
     //</editor-fold>
 }

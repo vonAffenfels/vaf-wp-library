@@ -27,6 +27,11 @@ final class Helper
         return str_replace($seperator, '', ucwords($input, $seperator));
     }
 
+    final public static function kebapCase(string $input): string
+    {
+        return strtolower(preg_replace('/[A-Z1-9]/', '-\\0', lcfirst($input)));
+    }
+
     /**
      * Implodes a list of string with a glue string, except the last part will be glued on
      * with the value in $lastGlue
