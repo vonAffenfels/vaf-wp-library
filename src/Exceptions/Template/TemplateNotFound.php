@@ -2,11 +2,11 @@
 
 namespace VAF\WP\Library\Exceptions\Template;
 
-use Exception;
+use LogicException;
 use Throwable;
 use VAF\WP\Library\Helper;
 
-final class TemplateNotFound extends Exception
+final class TemplateNotFound extends LogicException
 {
     final public function __construct(string $template, array $searchPath, Throwable $previous = null)
     {

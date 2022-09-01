@@ -2,11 +2,11 @@
 
 namespace VAF\WP\Library\Exceptions\Module\AdminPage;
 
-use Exception;
+use LogicException;
 use Throwable;
 use VAF\WP\Library\AbstractPlugin;
 
-final class ParentMenuNotFound extends Exception
+final class ParentMenuNotFound extends LogicException
 {
     final public function __construct(AbstractPlugin $plugin, string $parentSlug, Throwable $previous = null)
     {

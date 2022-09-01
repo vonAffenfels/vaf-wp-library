@@ -2,10 +2,10 @@
 
 namespace VAF\WP\Library\Exceptions;
 
-use Exception;
+use LogicException;
 use Throwable;
 
-final class ObjectIsLocked extends Exception
+final class ObjectIsLocked extends LogicException
 {
     final public function __construct(string $object, Throwable $previous = null)
     {

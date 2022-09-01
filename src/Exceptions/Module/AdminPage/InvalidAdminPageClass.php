@@ -2,13 +2,12 @@
 
 namespace VAF\WP\Library\Exceptions\Module\AdminPage;
 
-use Exception;
+use LogicException;
 use Throwable;
 use VAF\WP\Library\AbstractPlugin;
 use VAF\WP\Library\AdminPages\AdminPage;
-use VAF\WP\Library\RestAPI\Route;
 
-final class InvalidAdminPageClass extends Exception
+final class InvalidAdminPageClass extends LogicException
 {
     public function __construct(AbstractPlugin $plugin, string $class, Throwable $previous = null)
     {

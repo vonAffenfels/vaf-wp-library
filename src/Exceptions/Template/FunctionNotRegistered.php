@@ -2,11 +2,10 @@
 
 namespace VAF\WP\Library\Exceptions\Template;
 
-use Exception;
+use LogicException;
 use Throwable;
-use VAF\WP\Library\Helper;
 
-final class FunctionNotRegistered extends Exception
+final class FunctionNotRegistered extends LogicException
 {
     final public function __construct(string $function, Throwable $previous = null)
     {

@@ -2,11 +2,10 @@
 
 namespace VAF\WP\Library\Exceptions\Template;
 
-use Exception;
+use LogicException;
 use Throwable;
-use VAF\WP\Library\Helper;
 
-final class FunctionAlreadyRegistered extends Exception
+final class FunctionAlreadyRegistered extends LogicException
 {
     final public function __construct(string $function, Throwable $previous = null)
     {

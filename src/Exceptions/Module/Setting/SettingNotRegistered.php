@@ -2,10 +2,10 @@
 
 namespace VAF\WP\Library\Exceptions\Module\Setting;
 
-use Exception;
+use LogicException;
 use Throwable;
 
-final class SettingNotRegistered extends Exception
+final class SettingNotRegistered extends LogicException
 {
     final public function __construct(string $setting, Throwable $previous = null)
     {

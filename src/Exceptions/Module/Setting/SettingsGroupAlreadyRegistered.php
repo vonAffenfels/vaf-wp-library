@@ -2,11 +2,11 @@
 
 namespace VAF\WP\Library\Exceptions\Module\Setting;
 
-use Exception;
+use LogicException;
 use Throwable;
 use VAF\WP\Library\AbstractPlugin;
 
-final class SettingsGroupAlreadyRegistered extends Exception
+final class SettingsGroupAlreadyRegistered extends LogicException
 {
     final public function __construct(AbstractPlugin $plugin, string $group, Throwable $previous = null)
     {

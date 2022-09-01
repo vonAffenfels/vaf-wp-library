@@ -2,10 +2,10 @@
 
 namespace VAF\WP\Library\Exceptions\Template;
 
-use Exception;
+use LogicException;
 use Throwable;
 
-final class NamespaceNotRegistered extends Exception
+final class NamespaceNotRegistered extends LogicException
 {
     final public function __construct(string $namespace, Throwable $previous = null)
     {
