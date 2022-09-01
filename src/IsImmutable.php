@@ -26,7 +26,6 @@ trait IsImmutable
      * Checks if the object is locked and throws an exception if so
      *
      * @return void
-     * @throws ObjectIsLocked
      */
     final public function checkLock()
     {

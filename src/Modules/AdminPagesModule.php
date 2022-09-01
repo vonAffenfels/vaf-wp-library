@@ -56,7 +56,6 @@ final class AdminPagesModule extends AbstractHookModule
 
     /**
      * @return void
-     * @throws ParentMenuNotFound
      */
     final private function loadPages(): void
     {
@@ -70,7 +69,6 @@ final class AdminPagesModule extends AbstractHookModule
     /**
      * @param  AdminPage $page
      * @return void
-     * @throws ParentMenuNotFound
      */
     final private function registerMenuItem(AdminPage $page): void
     {

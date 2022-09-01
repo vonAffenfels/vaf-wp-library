@@ -2,8 +2,6 @@
 
 namespace VAF\WP\Library\Settings;
 
-use VAF\WP\Library\Exceptions\Template\NamespaceNotRegistered;
-use VAF\WP\Library\Exceptions\Template\TemplateNotFound;
 use VAF\WP\Library\Template;
 
 abstract class EnvAwareTextSetting extends TextSetting
@@ -46,8 +44,6 @@ abstract class EnvAwareTextSetting extends TextSetting
 
     /**
      * @return string
-     * @throws NamespaceNotRegistered
-     * @throws TemplateNotFound
      */
     public function renderInput(): string
     {

@@ -2,8 +2,6 @@
 
 namespace VAF\WP\Library\Settings;
 
-use VAF\WP\Library\Exceptions\Template\NamespaceNotRegistered;
-use VAF\WP\Library\Exceptions\Template\TemplateNotFound;
 use VAF\WP\Library\Template;
 
 abstract class TextSetting extends AbstractSetting
@@ -25,8 +23,6 @@ abstract class TextSetting extends AbstractSetting
 
     /**
      * @return string
-     * @throws NamespaceNotRegistered
-     * @throws TemplateNotFound
      */
     public function renderInput(): string
     {

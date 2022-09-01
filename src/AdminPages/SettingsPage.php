@@ -2,8 +2,6 @@
 
 namespace VAF\WP\Library\AdminPages;
 
-use VAF\WP\Library\Exceptions\Template\NamespaceNotRegistered;
-use VAF\WP\Library\Exceptions\Template\TemplateNotFound;
 use VAF\WP\Library\Request;
 use VAF\WP\Library\Settings\AbstractSetting;
 use VAF\WP\Library\Settings\SettingsGroup;
@@ -15,8 +13,6 @@ abstract class SettingsPage extends AdminPage
 
     /**
      * @return string
-     * @throws NamespaceNotRegistered
-     * @throws TemplateNotFound
      */
     final public function render(): string
     {

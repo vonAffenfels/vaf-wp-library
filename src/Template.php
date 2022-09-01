@@ -1,15 +1,9 @@
 <?php
 
-/**
- * @noinspection PhpUnused
- */
-
 namespace VAF\WP\Library;
 
 use Closure;
 use InvalidArgumentException;
-use VAF\WP\Library\AdminPages\SettingsPage;
-use VAF\WP\Library\Exceptions\Template\FunctionAlreadyRegistered;
 use VAF\WP\Library\Exceptions\Template\NamespaceNotRegistered;
 use VAF\WP\Library\Exceptions\Template\TemplateNotFound;
 use VAF\WP\Library\Templates\AbstractTemplate;
@@ -37,7 +31,6 @@ final class Template
      * Is needed to register library namespace and PHTML engine
      *
      * @return void
-     * @throws FunctionAlreadyRegistered
      */
     final private static function initialize(): void
     {
@@ -101,7 +94,6 @@ final class Template
      * @param  string $name Name of the custom function
      * @param  Closure $function The function itself
      * @return void
-     * @throws FunctionAlreadyRegistered
      */
     final public static function registerFunction(string $name, Closure $function)
     {
@@ -115,7 +107,6 @@ final class Template
      *
      * @param  string $name Name of the custom function
      * @return void
-     * @throws FunctionAlreadyRegistered
      */
     final public static function deregisterFunction(string $name)
     {
@@ -130,9 +121,6 @@ final class Template
      * @param  string $template The template to render. First part should be the namespace
      * @param  array $context All the data that should be known to the template
      * @return string
-     * @throws NamespaceNotRegistered
-     * @throws InvalidArgumentException
-     * @throws TemplateNotFound
      */
     final public static function render(string $template, array $context = []): string
     {
@@ -184,8 +172,6 @@ final class Template
      * @param string $template
      * @param array $context
      * @return void
-     * @throws NamespaceNotRegistered
-     * @throws TemplateNotFound
      */
     final public static function output(string $template, array $context = []): void
     {

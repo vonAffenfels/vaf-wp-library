@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @noinspection PhpUnused
- * @noinspection PhpUnusedParameterInspection
- */
-
 namespace VAF\WP\Library\Modules;
 
 use Closure;

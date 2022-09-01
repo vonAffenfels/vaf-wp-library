@@ -41,7 +41,6 @@ final class PHTMLTemplate extends AbstractTemplate
      * @param  string $name Name of the function
      * @param  Closure $function The function itself
      * @return void
-     * @throws FunctionAlreadyRegistered
      */
     final public static function registerFunction(string $name, Closure $function): void
     {
@@ -57,7 +56,6 @@ final class PHTMLTemplate extends AbstractTemplate
      *
      * @param  string $name Name of the function
      * @return void
-     * @throws FunctionNotRegistered
      */
     final public static function deregisterFunction(string $name): void
     {
@@ -75,7 +73,6 @@ final class PHTMLTemplate extends AbstractTemplate
      * @param  string $name Name of the function that got called
      * @param  array $arguments List of arguments passed to the function
      * @return mixed
-     * @throws FunctionNotRegistered
      */
     final public function __call(string $name, array $arguments)
     {

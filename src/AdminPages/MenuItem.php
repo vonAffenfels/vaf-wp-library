@@ -2,7 +2,6 @@
 
 namespace VAF\WP\Library\AdminPages;
 
-use VAF\WP\Library\Exceptions\ObjectIsLocked;
 use VAF\WP\Library\IsImmutable;
 
 final class MenuItem
@@ -88,7 +87,6 @@ final class MenuItem
      *
      * @param string $parent
      * @return $this
-     * @throws ObjectIsLocked
      */
     final public function setParent(string $parent): self
     {

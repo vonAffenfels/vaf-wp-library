@@ -32,8 +32,6 @@ abstract class SettingsGroup
 
     /**
      * @param  AbstractPlugin $plugin
-     * @throws InvalidSettingsClass
-     * @throws SettingsGroupAlreadyRegistered
      */
     final public function __construct(AbstractPlugin $plugin)
     {
@@ -64,7 +62,6 @@ abstract class SettingsGroup
 
     /**
      * @return SettingsGroup
-     * @throws SettingsGroupNotRegistered
      */
     final public static function getInstance(): SettingsGroup
     {

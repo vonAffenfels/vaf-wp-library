@@ -21,7 +21,6 @@ abstract class AbstractTemplate
      * Creates a new template object. Checks if the provided file exists and is readable
      *
      * @param  string $templateFile
-     * @throws TemplateFileNotFound
      */
     final public function __construct(string $templateFile)
     {

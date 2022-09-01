@@ -4,8 +4,6 @@ namespace VAF\WP\Library\Settings;
 
 use VAF\WP\Library\Exceptions\Module\Setting\SettingAlreadyRegistered;
 use VAF\WP\Library\Exceptions\Module\Setting\SettingNotRegistered;
-use VAF\WP\Library\Exceptions\Template\NamespaceNotRegistered;
-use VAF\WP\Library\Exceptions\Template\TemplateNotFound;
 use VAF\WP\Library\Template;
 
 abstract class AbstractSetting
@@ -29,7 +27,6 @@ abstract class AbstractSetting
 
     /**
      * @param  SettingsGroup $group
-     * @throws SettingAlreadyRegistered
      */
     final public function __construct(SettingsGroup $group)
     {
@@ -55,7 +52,6 @@ abstract class AbstractSetting
 
     /**
      * @return AbstractSetting
-     * @throws SettingNotRegistered
      */
     final private static function getInstance(): AbstractSetting
     {
@@ -69,7 +65,6 @@ abstract class AbstractSetting
 
     /**
      * @return mixed
-     * @throws SettingNotRegistered
      */
     final public static function getValue()
     {
@@ -95,8 +90,6 @@ abstract class AbstractSetting
 
     /**
      * @return string
-     * @throws NamespaceNotRegistered
-     * @throws TemplateNotFound
      */
     final public function render(): string
     {

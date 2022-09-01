@@ -67,7 +67,6 @@ abstract class AbstractPlugin
      * Configures the plugin to a state it is bootable
      *
      * @return $this
-     * @throws PluginAlreadyConfigured
      */
     final public function configure(string $pluginFile): self
     {
@@ -94,7 +93,6 @@ abstract class AbstractPlugin
      * Starts the plugin and initialises all modules and stuff
      *
      * @return $this
-     * @throws PluginNotConfigured
      */
     final public function start(): self
     {
@@ -197,9 +195,6 @@ abstract class AbstractPlugin
      * @param  string $moduleClass Class of the module to register
      * @param  Closure|null $configureFunction Configuration function to set special parameters for the module
      * @return $this
-     * @throws InvalidModuleClass
-     * @throws ModuleAlreadyRegistered
-     * @throws PluginAlreadyConfigured
      */
     final protected function registerModule(string $moduleClass, ?Closure $configureFunction = null): self
     {
@@ -254,7 +249,6 @@ abstract class AbstractPlugin
      * Returns an instance of the plugin API
      *
      * @return AbstractPluginAPI
-     * @throws ModuleNotRegistered
      */
     final public function getPluginAPI(): AbstractPluginAPI
     {

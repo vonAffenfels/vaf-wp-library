@@ -18,9 +18,6 @@ abstract class AbstractHookModule extends AbstractModule
 
     /**
      * Starts the hook module
-     *
-     * @throws HookMissingCallback
-     * @throws HookInvalidConfiguration
      */
     final public function start(): void
     {
