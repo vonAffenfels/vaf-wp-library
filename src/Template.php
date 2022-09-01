@@ -8,6 +8,8 @@ namespace VAF\WP\Library;
 
 use Closure;
 use InvalidArgumentException;
+use VAF\WP\Library\AdminPages\SettingsPage;
+use VAF\WP\Library\Exceptions\Template\FunctionAlreadyRegistered;
 use VAF\WP\Library\Exceptions\Template\NamespaceNotRegistered;
 use VAF\WP\Library\Exceptions\Template\TemplateNotFound;
 use VAF\WP\Library\Templates\AbstractTemplate;
@@ -35,6 +37,7 @@ final class Template
      * Is needed to register library namespace and PHTML engine
      *
      * @return void
+     * @throws FunctionAlreadyRegistered
      */
     final private static function initialize(): void
     {
@@ -98,11 +101,26 @@ final class Template
      * @param  string $name Name of the custom function
      * @param  Closure $function The function itself
      * @return void
+     * @throws FunctionAlreadyRegistered
      */
     final public static function registerFunction(string $name, Closure $function)
     {
         foreach (self::$engines as $engine) {
             call_user_func([$engine, 'registerFunction'], $name, $function);
+        }
+    }
+
+    /**
+     * De-Registers a custom function with all registered namespaces
+     *
+     * @param  string $name Name of the custom function
+     * @return void
+     * @throws FunctionAlreadyRegistered
+     */
+    final public static function deregisterFunction(string $name)
+    {
+        foreach (self::$engines as $engine) {
+            call_user_func([$engine, 'deregisterFunction'], $name);
         }
     }
 

@@ -1,0 +1,15 @@
+<?php
+use VAF\WP\Library\Settings\AbstractSetting;
+
+/** @var AbstractSetting $field */
+$field = $this->field;
+?>
+<tr>
+    <th><label for="<?php echo $field->getSlug() ?>"><?php echo $field->getTitle() ?></label></th>
+    <td>
+        <?php echo $field->renderInput() ?>
+        <?php if (!empty($field->getDescription())) : ?>
+            <p class="description"><?php echo $field->getDescription() ?></p>
+        <?php endif; ?>
+    </td>
+</tr>

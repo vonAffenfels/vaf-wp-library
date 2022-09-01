@@ -53,6 +53,22 @@ final class PHTMLTemplate extends AbstractTemplate
     }
 
     /**
+     * De-Registers a custom function with this engine
+     *
+     * @param  string $name Name of the function
+     * @return void
+     * @throws FunctionNotRegistered
+     */
+    final public static function deregisterFunction(string $name): void
+    {
+        if (isset(self::$customFunctions[$name])) {
+            throw new FunctionNotRegistered($name);
+        }
+
+        unset(self::$customFunctions[$name]);
+    }
+
+    /**
      * Will get called if an unknown function is called
      * Checks if it is a registered custom function and calls it
      *

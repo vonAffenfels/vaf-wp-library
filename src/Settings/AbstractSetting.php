@@ -4,6 +4,9 @@ namespace VAF\WP\Library\Settings;
 
 use VAF\WP\Library\Exceptions\Module\Setting\SettingAlreadyRegistered;
 use VAF\WP\Library\Exceptions\Module\Setting\SettingNotRegistered;
+use VAF\WP\Library\Exceptions\Template\NamespaceNotRegistered;
+use VAF\WP\Library\Exceptions\Template\TemplateNotFound;
+use VAF\WP\Library\Template;
 
 abstract class AbstractSetting
 {
@@ -88,5 +91,29 @@ abstract class AbstractSetting
 
         $this->value = $this->parseValue($value);
         $this->loaded = true;
+    }
+
+    /**
+     * @return string
+     * @throws NamespaceNotRegistered
+     * @throws TemplateNotFound
+     */
+    final public function render(): string
+    {
+        return Template::render('VafWpLibrary/AdminPages/SettingsPage/SettingsField', [
+            'field' => $this
+        ]);
+    }
+
+    /**
+     * @return string
+     * @throws NamespaceNotRegistered
+     * @throws TemplateNotFound
+     */
+    public function renderInput(): string
+    {
+        return Template::render('VafWpLibrary/AdminPages/SettingsPage/Fields/Text', [
+            'field' => $this
+        ]);
     }
 }

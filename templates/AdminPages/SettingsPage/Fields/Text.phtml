@@ -1,0 +1,7 @@
+<?php
+use VAF\WP\Library\Settings\AbstractSetting;
+
+/** @var AbstractSetting $field */
+$field = $this->field;
+?>
+<input name="<?php echo $field->getSlug() ?>" id="<?php echo $field->getSlug() ?>" type="text" value="<?php echo $field->getValue() ?>" class="regular-text">

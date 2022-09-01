@@ -1,0 +1,23 @@
+<?php
+    use VAF\WP\Library\Settings\SettingsGroup;
+
+    /** @var SettingsGroup $group */
+    $group = $this->group;
+?>
+<div class="wrap">
+    <h1><?php echo $group->getTitle() ?></h1>
+
+    <form name="form" action="" method="post">
+        <?php if (!empty($group->getDescription())) : ?>
+            <p><?php echo $group->getDescription() ?></p>
+        <?php endif; ?>
+
+        <table class="form-table" role="presentation">
+            <tbody>
+                <?php foreach ($group->getSettings() as $setting) : ?>
+                    <?php echo $setting->render() ?>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </form>
+</div>

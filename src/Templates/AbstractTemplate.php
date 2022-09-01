@@ -86,4 +86,12 @@ abstract class AbstractTemplate
      * @return void
      */
     abstract public static function registerFunction(string $name, Closure $function): void;
+
+    /**
+     * Abstract function to deregister a custom function with this engine
+     *
+     * @param  string $name Name of the function
+     * @return void
+     */
+    abstract public static function deregisterFunction(string $name): void;
 }
