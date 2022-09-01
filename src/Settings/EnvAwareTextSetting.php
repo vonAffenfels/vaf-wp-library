@@ -51,8 +51,10 @@ abstract class EnvAwareTextSetting extends TextSetting
      */
     public function renderInput(): string
     {
-        return Template::render('VafWpLibrary/AdminPages/SettingsPage/Fields/EnvAware', [
-            'field' => $this
+        return Template::render('VafWpLibrary/AdminPages/SettingsPage/Fields/Text', [
+            'slug' => $this->getSlug(),
+            'value' => $this->getValue(),
+            'readonly' => $this->isFromEnv()
         ]);
     }
 }

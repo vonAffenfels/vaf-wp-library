@@ -105,15 +105,5 @@ abstract class AbstractSetting
         ]);
     }
 
-    /**
-     * @return string
-     * @throws NamespaceNotRegistered
-     * @throws TemplateNotFound
-     */
-    public function renderInput(): string
-    {
-        return Template::render('VafWpLibrary/AdminPages/SettingsPage/Fields/Text', [
-            'field' => $this
-        ]);
-    }
+    abstract public function renderInput(): string;
 }

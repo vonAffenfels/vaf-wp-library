@@ -5,6 +5,7 @@ namespace VAF\WP\Library\AdminPages;
 use VAF\WP\Library\Exceptions\Template\NamespaceNotRegistered;
 use VAF\WP\Library\Exceptions\Template\TemplateNotFound;
 use VAF\WP\Library\Request;
+use VAF\WP\Library\Settings\AbstractSetting;
 use VAF\WP\Library\Settings\SettingsGroup;
 use VAF\WP\Library\Template;
 
@@ -19,16 +20,20 @@ abstract class SettingsPage extends AdminPage
      */
     final public function render(): string
     {
-        $settingsGroup = $this->getSettingsGroup();
-        $nonce = 'vaf-settings-page-' . $settingsGroup->getSlug();
+        $group = $this->getSettingsGroup();
+        $nonce = 'vaf-settings-page-' . $group->getSlug();
         $request = Request::getInstance();
 
         if ($request->isPost() && $request->getParam('action', Request::TYPE_POST, '') === 'update') {
-            $this->handleUpdate($settingsGroup, $nonce);
+            $this->handleUpdate($group, $nonce);
         }
 
         return Template::render('VafWpLibrary/AdminPages/SettingsPage/Wrapper', [
-            'group' => $settingsGroup,
+            'title' => $group->getTitle(),
+            'description' => $group->getDescription(),
+            'settings' => array_map(function (AbstractSetting $setting): string {
+                return $setting->render();
+            }, $group->getSettings()),
             'nonce' => $nonce
         ]);
     }

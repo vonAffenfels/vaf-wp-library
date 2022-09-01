@@ -1,7 +1,8 @@
-<?php
-    use VAF\WP\Library\Settings\AbstractSetting;
-
-    /** @var AbstractSetting $field */
-    $field = $this->field;
-?>
-<input name="<?php echo $field->getSlug() ?>" id="<?php echo $field->getSlug() ?>" type="text" value="<?php echo $field->getValue() ?>" class="regular-text">
+<input
+    name="<?php echo $this->slug ?>"
+    id="<?php echo $this->slug ?>"
+    type="text"
+    value="<?php echo $this->value ?>"
+    class="regular-text"
+    <?php if ($this->readonly) : ?>readonly="readonly"<?php endif; ?>
+>
