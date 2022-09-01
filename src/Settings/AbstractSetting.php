@@ -2,60 +2,91 @@
 
 namespace VAF\WP\Library\Settings;
 
-use VAF\WP\Library\Helper;
+use VAF\WP\Library\Exceptions\Module\Setting\SettingAlreadyRegistered;
+use VAF\WP\Library\Exceptions\Module\Setting\SettingNotRegistered;
 
 abstract class AbstractSetting
 {
-    /**
-     * @var string
-     */
-    private string $slug;
-
     /**
      * @var mixed
      */
     private $value;
 
     /**
+     * @var AbstractSetting[] List of all instances. Key is the classname.
+     */
+    private static array $instances = [];
+
+    /**
      * @var bool Determines if the value of this setting was already loaded and processed
      */
     private bool $loaded = false;
 
+    private SettingsGroup $group;
+
     /**
-     * @var mixed
+     * @param  SettingsGroup $group
+     * @throws SettingAlreadyRegistered
      */
-    private $default;
-
-    final public function __construct(string $slug, $default = null)
+    final public function __construct(SettingsGroup $group)
     {
-        $this->slug = Helper::sanitizeKey($slug);
-        $this->default = $default;
+        $classname = get_class($this);
+        if (isset(self::$instances[$classname])) {
+            throw new SettingAlreadyRegistered($group->getPlugin(), $classname);
+        }
+        self::$instances[$classname] = $this;
+
+        $this->group = $group;
     }
 
-    final public function getSlug(): string
-    {
-        return $this->slug;
-    }
+    abstract public function getSlug(): string;
+    abstract public function getTitle(): string;
+    abstract public function getDescription(): string;
+    abstract protected function getDefault();
+    abstract protected function parseValue($value);
 
     final public function isLoaded(): bool
     {
         return $this->loaded;
     }
 
-    final public function getValue()
+    /**
+     * @return AbstractSetting
+     * @throws SettingNotRegistered
+     */
+    final private static function getInstance(): AbstractSetting
     {
-        return $this->value;
+        $classname = static::class;
+        if (!isset(self::$instances[$classname])) {
+            throw new SettingNotRegistered($classname);
+        }
+
+        return self::$instances[$classname];
     }
 
-    final public function loadValue($value = null)
+    /**
+     * @return mixed
+     * @throws SettingNotRegistered
+     */
+    final public static function getValue()
     {
+        $instance = static::getInstance();
+        if (!$instance->isLoaded()) {
+            $instance->loadValue();
+        }
+
+        return $instance->value;
+    }
+
+    final private function loadValue()
+    {
+        $value = $this->group->getValue($this->getSlug());
+
         if (is_null($value)) {
-            $value = $this->default;
+            $value = $this->getDefault();
         }
 
         $this->value = $this->parseValue($value);
         $this->loaded = true;
     }
-
-    abstract protected function parseValue($value);
 }

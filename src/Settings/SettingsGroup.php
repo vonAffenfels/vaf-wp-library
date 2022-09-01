@@ -3,63 +3,39 @@
 namespace VAF\WP\Library\Settings;
 
 use VAF\WP\Library\AbstractPlugin;
-use VAF\WP\Library\Exceptions\Module\Setting\SettingNotRegistered;
-use VAF\WP\Library\Exceptions\Module\Setting\SettingsGroupAlreadyRegistered;
-use VAF\WP\Library\Exceptions\Module\Setting\SettingsGroupNotRegistered;
+use VAF\WP\Library\Exceptions\Module\Setting\InvalidSettingsClass;
 
 abstract class SettingsGroup
 {
     abstract public function getSlug(): string;
     abstract public function getTitle(): string;
     abstract public function getDescription(): string;
-    abstract public function registerSettings(): void;
+    abstract public function getSettings(): array;
 
     private array $values = [];
 
-    private bool $isLoaded = false;
-
-    /**
-     * @var AbstractSetting[] Settings of the settingsgroup
-     */
-    private array $settings;
-
-    /**
-     * @var SettingsGroup[]
-     */
-    private static array $instances = [];
+    private bool $loaded = false;
 
     private AbstractPlugin $plugin;
 
     /**
      * @param  AbstractPlugin $plugin
-     * @throws SettingsGroupAlreadyRegistered
+     * @throws InvalidSettingsClass
      */
     final public function __construct(AbstractPlugin $plugin)
     {
-        $className = get_class($this);
-        if (isset(self::$instances[$className])) {
-            throw new SettingsGroupAlreadyRegistered($plugin, $this->getSlug());
-        }
-
-        self::$instances[$className] = $this;
-
         $this->plugin = $plugin;
-        $this->registerSettings();
-    }
 
-    /**
-     * @return SettingsGroup
-     * @throws SettingsGroupNotRegistered
-     */
-    final protected static function getInstance(): SettingsGroup
-    {
-        if (!isset(self::$instances[static::class])) {
-            throw new SettingsGroupNotRegistered(null, static::class);
+        foreach ($this->getSettings() as $setting) {
+            if (!is_subclass_of($setting, AbstractSetting::class)) {
+                throw new InvalidSettingsClass($this->getPlugin(), $setting);
+            }
+
+            new $setting($this);
         }
-        return self::$instances[static::class];
     }
 
-    final private function getPlugin(): AbstractPlugin
+    final public function getPlugin(): AbstractPlugin
     {
         return $this->plugin;
     }
@@ -70,58 +46,20 @@ abstract class SettingsGroup
             $this->getPlugin()->getPluginSlug() . '-' . $this->getSlug(),
             []
         );
-        $this->isLoaded = true;
+        $this->loaded = true;
     }
 
-    /**
-     * @param  AbstractSetting $setting
-     * @return $this
-     */
-    final public function addSetting(AbstractSetting $setting): self
+    final private function isLoaded(): bool
     {
-        $this->settings[$setting->getSlug()] = $setting;
-        return $this;
+        return $this->loaded;
     }
 
-    final public function getSetting(string $slug): ?AbstractSetting
+    final public function getValue(string $slug)
     {
-        if (!$this->hasSetting($slug)) {
-            return null;
-        }
-
-        return $this->settings[$slug];
-    }
-
-    /**
-     * @param  string $slug
-     * @return bool
-     */
-    final public function hasSetting(string $slug): bool
-    {
-        return isset($this->settings[$slug]);
-    }
-
-    /**
-     * @param  string $setting
-     * @return mixed
-     * @throws SettingNotRegistered
-     */
-    final public function getValue(string $setting)
-    {
-        if (!$this->hasSetting($setting)) {
-            throw new SettingNotRegistered($this->getPlugin(), $this, $setting);
-        }
-
-        // Load values from database if not already loaded
-        if (!$this->isLoaded) {
+        if (!$this->isLoaded()) {
             $this->loadValues();
         }
 
-        $setting = $this->getSetting($setting);
-        if (!$setting->isLoaded()) {
-            $setting->loadValue($this->values[$setting->getSlug()] ?? null);
-        }
-
-        return $setting->getValue();
+        return $this->values[$slug] ?? null;
     }
 }
