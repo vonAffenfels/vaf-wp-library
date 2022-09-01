@@ -1,47 +1,42 @@
 <?php
 
-/**
- * @noinspection PhpUnused
- */
-
 namespace VAF\WP\Library\Modules;
 
 use Closure;
-use VAF\WP\Library\AdminPages\Menu\AbstractMenuItem;
-use VAF\WP\Library\AdminPages\Menu\ChildMenuItem;
-use VAF\WP\Library\AdminPages\Menu\MainMenuItem;
-use VAF\WP\Library\AdminPages\Renderer\AbstractRenderer;
+use VAF\WP\Library\AdminPages\AdminPage;
+use VAF\WP\Library\Exceptions\Module\AdminPage\InvalidAdminPageClass;
 use VAF\WP\Library\Exceptions\Module\AdminPage\ParentMenuNotFound;
 
 final class AdminPagesModule extends AbstractHookModule
 {
     /**
-     * List of predefined menu item slugs
+     * @var array List of all adminpage classes
      */
-    public const PREDEFINED_MENU_MEDIA = 'upload.php';
-    public const PREDEFINED_MENU_COMMENTS = 'edit-comments.php';
-    public const PREDEFINED_MENU_POSTS = 'edit.php';
-    public const PREDEFINED_MENU_PAGES = 'edit.php?post_type=page';
-    public const PREDEFINED_MENU_APPEARANCE = 'themes.php';
-    public const PREDEFINED_MENU_PLUGINS = 'plugins.php';
-    public const PREDEFINED_MENU_USERS = 'users.php';
-    public const PREDEFINED_MENU_TOOLS = 'tools.php';
-    public const PREDEFINED_MENU_DASHBOARD = 'index.php';
-    public const PREDEFINED_MENU_SETTINGS = 'options-general.php';
+    private array $adminPages = [];
+
+    private static array $adminPageSlugMapper = [];
 
     /**
-     * @var Closure Closure function that is run at the right time to register menu items
+     * @var AdminPage[]
      */
-    private Closure $menuItemCreator;
+    private array $laterChildMenus = [];
 
     /**
-     * @param  Closure $menuItemCreator Closure function that is run at the right time to register menu items
-     * @return callable
+     * Returns a callable that is run to configure the module
+     *
+     * @param  array $adminPages
+     * @return Closure
      */
-    final public static function configure(Closure $menuItemCreator): Closure
+    final public static function configure(array $adminPages): Closure
     {
-        return function (AdminPagesModule $module) use ($menuItemCreator) {
-            $module->menuItemCreator = $menuItemCreator;
+        return function (AdminPagesModule $module) use ($adminPages) {
+            foreach ($adminPages as $adminPage) {
+                if (!is_subclass_of($adminPage, AdminPage::class)) {
+                    throw new InvalidAdminPageClass($this->getPlugin(), $adminPage);
+                }
+
+                $module->adminPages[] = $adminPage;
+            }
         };
     }
 
@@ -54,112 +49,88 @@ final class AdminPagesModule extends AbstractHookModule
     {
         return [
             'admin_menu' => function () {
-                call_user_func($this->menuItemCreator, $this);
+                $this->loadPages();
             }
         ];
     }
 
     /**
-     * Adds a new top level menu item with all children
-     *
-     * @param MainMenuItem $menuItem Menu item to add
-     * @return void
-     */
-    final public function addMenuItem(MainMenuItem $menuItem): void
-    {
-        $menuSlug = $this->getPlugin()->getPluginSlug();
-
-        $menuItem->lockObject();
-        $menuSlug = $menuSlug . '-' . $menuItem->getKey();
-
-        add_menu_page(
-            $menuItem->getPageTitle(),
-            $menuItem->getMenuTitle(),
-            'manage_options',
-            $menuSlug,
-            function () use ($menuItem) {
-                $this->renderPage($menuItem);
-            },
-            $menuItem->getIcon(),
-            $menuItem->getPosition()
-        );
-
-        if ($menuItem->hasChildren()) {
-            add_submenu_page(
-                $menuSlug,
-                $menuItem->getPageTitle(),
-                $menuItem->getSubMenuTitle(),
-                'manage_options',
-                $menuSlug,
-                '__return_false',
-                $menuItem->getPosition()
-            );
-
-            foreach ($menuItem->getChildren() as $child) {
-                $child->lockObject();
-
-                add_submenu_page(
-                    $menuSlug,
-                    $child->getPageTitle(),
-                    $child->getMenuTitle(),
-                    'manage_options',
-                    $menuSlug . '-' . $child->getKey(),
-                    function () use ($child) {
-                        $this->renderPage($child);
-                    },
-                    $child->getPosition()
-                );
-            }
-        }
-    }
-
-    /**
-     * Adds a new child menu item to an existing menu item which our plugin didn't created
-     *
-     * @param string $slug Slug of the top level menu item
-     * @param ChildMenuItem $child Child to add
      * @return void
      * @throws ParentMenuNotFound
      */
-    final public function addChildToExisting(string $slug, ChildMenuItem $child): void
+    final private function loadPages(): void
     {
-        if (!$this->hasParentMenu($slug)) {
-            throw new ParentMenuNotFound($this->getPlugin(), $slug);
+        foreach ($this->adminPages as $class) {
+            $adminPageObj = new $class($this->getPlugin());
+
+            $this->registerMenuItem($adminPageObj);
         }
-
-        $menuSlug = $this->getPlugin()->getPluginSlug();
-
-        $child->lockObject();
-
-        add_submenu_page(
-            $slug,
-            $child->getPageTitle(),
-            $child->getMenuTitle(),
-            'manage_options',
-            $menuSlug . '-' . $child->getKey(),
-            function () use ($child) {
-                $this->renderPage($child);
-            },
-            $child->getPosition()
-        );
     }
 
     /**
-     * @param  AbstractMenuItem $menuItem
+     * @param  AdminPage $page
      * @return void
+     * @throws ParentMenuNotFound
      */
-    final private function renderPage(AbstractMenuItem $menuItem): void
+    final private function registerMenuItem(AdminPage $page): void
     {
-        $class = $menuItem->getRendererClass();
-        $configureFunction = $menuItem->getConfigureFunc();
+        $menuItem = $page->getMenu();
+        $menuItem->lockObject();
+        $parent = $menuItem->getParent();
 
-        /** @var AbstractRenderer $rendererObject */
-        $rendererObject = new $class($this->getPlugin());
-        if (is_callable($configureFunction)) {
-            $configureFunction($rendererObject);
+        $slugPrefix = $this->getPlugin()->getPluginSlug() . '-';
+
+        if (is_null($parent)) {
+            // We are registering a main menu item
+
+            add_menu_page(
+                $page->getTitle(),
+                $menuItem->getMenuTitle(),
+                'manage_options',
+                $slugPrefix . $menuItem->getSlug(),
+                function () use ($page) {
+                    echo $page->render();
+                },
+                $menuItem->getIcon(),
+                $menuItem->getPosition()
+            );
+
+            // Add atleast one child to give the option to name the submenu item differently
+            // when having children
+            add_submenu_page(
+                $slugPrefix . $menuItem->getSlug(),
+                $page->getTitle(),
+                $menuItem->getSubMenuTitle(),
+                'manage_options',
+                $slugPrefix . $menuItem->getSlug(),
+                '__return_false',
+                null
+            );
+
+            self::$adminPageSlugMapper[get_class($page)] = $slugPrefix . $menuItem->getSlug();
+        } else {
+            // We will add a child
+            // First we will check if parent exists
+            if (isset(self::$adminPageSlugMapper[$parent])) {
+                $parent = self::$adminPageSlugMapper[$parent];
+            }
+
+            if (!$this->hasParentMenu($parent)) {
+                throw new ParentMenuNotFound($this->getPlugin(), $parent);
+            }
+
+            add_submenu_page(
+                $parent,
+                $page->getTitle(),
+                $menuItem->getMenuTitle(),
+                'manage_options',
+                $slugPrefix . $menuItem->getSlug(),
+                function () use ($page) {
+                    echo $page->render();
+                },
+                $menuItem->getPosition()
+            );
         }
-
-        echo $rendererObject->render();
     }
 
     /**
