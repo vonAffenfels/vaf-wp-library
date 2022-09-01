@@ -6,12 +6,14 @@
 
 namespace VAF\WP\Library\Settings;
 
+use Closure;
+
 class EnvAwareTextSetting extends TextSetting
 {
     /**
-     * @var callable|null
+     * @var Closure|null
      */
-    private $envParser = null;
+    private ?Closure $envParser = null;
 
     /**
      * @var string
@@ -29,7 +31,7 @@ class EnvAwareTextSetting extends TextSetting
         return $this;
     }
 
-    final public function setEnvParser(callable $envParser): self
+    final public function setEnvParser(Closure $envParser): self
     {
         $this->envParser = $envParser;
         return $this;

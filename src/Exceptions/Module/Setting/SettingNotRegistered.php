@@ -19,7 +19,7 @@ final class SettingNotRegistered extends Exception
             '[Plugin %s] [Module Setting] Setting "%s" is not registered in settingsgroup "%s"!',
             $plugin->getPluginSlug(),
             $setting,
-            $settingsGroup->getKey()
+            $settingsGroup->getSlug()
         );
         parent::__construct($message, 0, $previous);
     }

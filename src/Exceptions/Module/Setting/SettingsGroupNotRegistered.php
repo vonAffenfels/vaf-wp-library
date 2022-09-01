@@ -8,11 +8,16 @@ use VAF\WP\Library\AbstractPlugin;
 
 final class SettingsGroupNotRegistered extends Exception
 {
-    public function __construct(AbstractPlugin $plugin, string $settingsGroup, Throwable $previous = null)
+    public function __construct(?AbstractPlugin $plugin, string $settingsGroup, Throwable $previous = null)
     {
+        $pluginPart = '';
+        if (!is_null($plugin)) {
+            $pluginPart = sprintf('[Plugin %s] ', $plugin->getPluginSlug());
+        }
+
         $message = sprintf(
-            '[Plugin %s] [Module Setting] Settingsgroup "%s" is not registered!',
-            $plugin->getPluginSlug(),
+            '%s[Module Setting] Settingsgroup "%s" is not registered!',
+            $pluginPart,
             $settingsGroup
         );
         parent::__construct($message, 0, $previous);
