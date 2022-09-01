@@ -46,7 +46,7 @@ abstract class AbstractSetting
     abstract public function getTitle(): string;
     abstract public function getDescription(): string;
     abstract protected function getDefault();
-    abstract protected function parseValue($value);
+    abstract protected function deserialize($value);
 
     final public function isLoaded(): bool
     {
@@ -89,7 +89,7 @@ abstract class AbstractSetting
             $value = $this->getDefault();
         }
 
-        $this->value = $this->parseValue($value);
+        $this->value = $this->deserialize($value);
         $this->loaded = true;
     }
 

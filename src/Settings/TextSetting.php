@@ -4,9 +4,8 @@ namespace VAF\WP\Library\Settings;
 
 abstract class TextSetting extends AbstractSetting
 {
-    protected function parseValue($value)
+    protected function deserialize($value)
     {
-        // No need to parse a value
         return $value;
     }
 
