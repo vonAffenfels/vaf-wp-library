@@ -18,6 +18,8 @@ abstract class AdminPage
         return $this->plugin;
     }
 
+    abstract public function render(): string;
+
     abstract public function getMenu(): MenuItem;
 
     abstract public function getTitle(): string;

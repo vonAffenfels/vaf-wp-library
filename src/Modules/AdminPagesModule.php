@@ -89,7 +89,7 @@ final class AdminPagesModule extends AbstractHookModule
                 'manage_options',
                 $slugPrefix . $menuItem->getSlug(),
                 function () use ($page) {
-                    echo sprintf('Page %s - Menu Item %s', $page->getTitle(), $page->getMenu());
+                    echo $page->render();
                 },
                 $menuItem->getIcon(),
                 $menuItem->getPosition()
@@ -126,7 +126,7 @@ final class AdminPagesModule extends AbstractHookModule
                 'manage_options',
                 $slugPrefix . $menuItem->getSlug(),
                 function () use ($page) {
-                    echo sprintf('Page %s - Menu Item %s', $page->getTitle(), $page->getMenu());
+                    echo $page->render();
                 },
                 $menuItem->getPosition()
             );
