@@ -25,8 +25,22 @@ abstract class EnvAwareTextSetting extends TextSetting
             $env = $this->getEnvValue();
             if (!is_null($env)) {
                 $value = $env;
-                $this->fromEnv = true;
             }
+        }
+
+        return $value;
+    }
+
+    protected function serialize($value)
+    {
+        if (!$this->isLoaded()) {
+            // We need to check if we have an env value
+            $this->getEnvValue();
+        }
+
+        if ($this->isFromEnv()) {
+            // Do not save to database if from env
+            return null;
         }
 
         return $value;
@@ -39,17 +53,22 @@ abstract class EnvAwareTextSetting extends TextSetting
             return null;
         }
 
-        return $this->parseEnvValue($env);
+        $env = $this->parseEnvValue($env);
+        if (!is_null($env)) {
+            $this->fromEnv = true;
+        }
+
+        return $env;
     }
 
     /**
      * @return string
      */
-    public function renderInput(): string
+    public function renderInput($displayValue = null): string
     {
         return Template::render('VafWpLibrary/AdminPages/SettingsPage/Fields/Text', [
             'slug' => $this->getSlug(),
-            'value' => $this->getValue(),
+            'value' => $displayValue ?? $this->getValue(),
             'readonly' => $this->isFromEnv()
         ]);
     }

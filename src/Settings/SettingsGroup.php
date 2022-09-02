@@ -14,9 +14,16 @@ abstract class SettingsGroup
     abstract public function getDescription(): string;
     abstract protected function getSettingsToRegister(): array;
 
+    protected function isAutoLoad(): bool
+    {
+        return false;
+    }
+
     private array $values = [];
 
     private bool $loaded = false;
+
+    private bool $dirty = false;
 
     private AbstractPlugin $plugin;
 
@@ -48,7 +55,8 @@ abstract class SettingsGroup
                 throw new InvalidSettingsClass($this->getPlugin(), $setting);
             }
 
-            $this->settings[] = new $setting($this);
+            $settingObj = new $setting($this);
+            $this->settings[$settingObj->getSlug()] = $settingObj;
         }
     }
 
@@ -57,7 +65,12 @@ abstract class SettingsGroup
      */
     final public function getSettings(): array
     {
-        return $this->settings;
+        return array_values($this->settings);
+    }
+
+    final private function getSetting(string $slug): AbstractSetting
+    {
+        return $this->settings[$slug];
     }
 
     /**
@@ -99,5 +112,38 @@ abstract class SettingsGroup
         }
 
         return $this->values[$slug] ?? null;
+    }
+
+    final public function setValue(string $slug, $value): self
+    {
+        // Only save if different
+        $existingValue = $this->getValue($slug);
+        if ($existingValue !== $value) {
+            if (is_null($value)) {
+                unset($this->values[$slug]);
+            } else {
+                $this->values[$slug] = $value;
+            }
+
+            $this->getSetting($slug)->forceReload();
+            $this->dirty = true;
+        }
+
+        return $this;
+    }
+
+    final public function saveGroup(): self
+    {
+        if ($this->dirty) {
+            update_option(
+                $this->getPlugin()->getPluginSlug() . '-' . $this->getSlug(),
+                $this->values,
+                $this->isAutoLoad()
+            );
+
+            $this->dirty = false;
+        }
+
+        return $this;
     }
 }
