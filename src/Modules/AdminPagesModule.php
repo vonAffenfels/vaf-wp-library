@@ -32,7 +32,7 @@ final class AdminPagesModule extends AbstractHookModule
         return function (AdminPagesModule $module) use ($adminPages) {
             foreach ($adminPages as $adminPage) {
                 if (!is_subclass_of($adminPage, AdminPage::class)) {
-                    throw new InvalidAdminPageClass($this->getPlugin(), $adminPage);
+                    throw new InvalidAdminPageClass($module->getPlugin(), $adminPage);
                 }
 
                 $module->adminPages[] = $adminPage;

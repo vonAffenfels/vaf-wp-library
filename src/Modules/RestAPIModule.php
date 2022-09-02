@@ -20,8 +20,8 @@ final class RestAPIModule extends AbstractHookModule
     {
         return function (RestAPIModule $module) use ($routes, $restNamespace) {
             foreach ($routes as $route) {
-                if (!is_subclass_of($route, RestAPIModule::class)) {
-                    throw new InvalidRouteClass($this->getPlugin(), $route);
+                if (!is_subclass_of($route, Route::class)) {
+                    throw new InvalidRouteClass($module->getPlugin(), $route);
                 }
 
                 $module->routes[] = $route;

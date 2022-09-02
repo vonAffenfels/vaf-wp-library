@@ -18,7 +18,7 @@ final class PluginAPIModule extends AbstractHookModule
     {
         return function (PluginAPIModule $module) use ($apiClass) {
             if (!is_subclass_of($apiClass, AbstractPluginAPI::class)) {
-                throw new InvalidAPIClass($this->getPlugin(), $apiClass);
+                throw new InvalidAPIClass($module->getPlugin(), $apiClass);
             }
 
             $module->apiClass = $apiClass;

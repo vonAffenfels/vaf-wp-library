@@ -20,7 +20,7 @@ final class SettingsModule extends AbstractModule
         return function (SettingsModule $module) use ($settingsGroups) {
             foreach ($settingsGroups as $settingsGroup) {
                 if (!is_subclass_of($settingsGroup, SettingsGroup::class)) {
-                    throw new InvalidSettingsGroupClass($this->getPlugin(), $settingsGroup);
+                    throw new InvalidSettingsGroupClass($module->getPlugin(), $settingsGroup);
                 }
 
                 new $settingsGroup($module->getPlugin());
