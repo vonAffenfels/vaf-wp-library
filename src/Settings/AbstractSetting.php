@@ -2,39 +2,65 @@
 
 namespace VAF\WP\Library\Settings;
 
-use VAF\WP\Library\Helper;
+use VAF\WP\Library\Exceptions\Module\Setting\SettingAlreadyRegistered;
+use VAF\WP\Library\Exceptions\Module\Setting\SettingNotRegistered;
+use VAF\WP\Library\Exceptions\Validator\InvalidValidatorClass;
+use VAF\WP\Library\Template;
+use VAF\WP\Library\Validators\AbstractValidator;
 
 abstract class AbstractSetting
 {
-    /**
-     * @var string
-     */
-    private string $key;
-
     /**
      * @var mixed
      */
     private $value;
 
     /**
+     * @var AbstractSetting[] List of all instances. Key is the classname.
+     */
+    private static array $instances = [];
+
+    /**
      * @var bool Determines if the value of this setting was already loaded and processed
      */
     private bool $loaded = false;
 
-    /**
-     * @var mixed
-     */
-    private $default;
+    private SettingsGroup $group;
 
-    final public function __construct(string $key, $default = null)
+    /**
+     * @param SettingsGroup $group
+     */
+    final public function __construct(SettingsGroup $group)
     {
-        $this->key = Helper::sanitizeKey($key);
-        $this->default = $default;
+        $classname = get_class($this);
+        if (isset(self::$instances[$classname])) {
+            throw new SettingAlreadyRegistered($group->getPlugin(), $classname);
+        }
+        self::$instances[$classname] = $this;
+
+        $this->group = $group;
     }
 
-    final public function getKey(): string
+    abstract public function getSlug(): string;
+
+    abstract public function getTitle(): string;
+
+    abstract public function getDescription(): string;
+
+    abstract protected function getDefault();
+
+    abstract protected function deserialize($value);
+
+    abstract protected function serialize($value);
+
+    protected function getValidators(): array
     {
-        return $this->key;
+        return [];
+    }
+
+    protected function getValidatorMessage(string $validator): ?string
+    {
+        return null;
     }
 
     final public function isLoaded(): bool
@@ -42,20 +68,87 @@ abstract class AbstractSetting
         return $this->loaded;
     }
 
-    final public function getValue()
+    /**
+     * @return AbstractSetting
+     */
+    final private static function getInstance(): AbstractSetting
     {
-        return $this->value;
-    }
-
-    final public function loadValue($value = null)
-    {
-        if (is_null($value)) {
-            $value = $this->default;
+        $classname = static::class;
+        if (!isset(self::$instances[$classname])) {
+            throw new SettingNotRegistered($classname);
         }
 
-        $this->value = $this->parseValue($value);
+        return self::$instances[$classname];
+    }
+
+    /**
+     * @return mixed
+     */
+    final public static function getValue()
+    {
+        $instance = static::getInstance();
+        if (!$instance->isLoaded()) {
+            $instance->loadValue();
+        }
+
+        return $instance->value;
+    }
+
+    final public static function setValue($value): void
+    {
+        $instance = static::getInstance();
+
+        $value = $instance->serialize($value);
+        $instance->group->setValue($instance->getSlug(), $value);
+    }
+
+    final private function loadValue()
+    {
+        $value = $this->group->getValue($this->getSlug());
+
+        if (is_null($value)) {
+            $value = $this->getDefault();
+        }
+
+        $this->value = $this->deserialize($value);
         $this->loaded = true;
     }
 
-    abstract protected function parseValue($value);
+    final public function forceReload(): self
+    {
+        $this->loaded = false;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    final public function render($displayValue = null): string
+    {
+        return Template::render('VafWpLibrary/AdminPages/SettingsPage/SettingsField', [
+            'slug' => $this->getSlug(),
+            'title' => $this->getTitle(),
+            'description' => $this->getDescription(),
+            'input' => $this->renderInput($displayValue)
+        ]);
+    }
+
+    final public function validate($value): ?string
+    {
+        foreach ($this->getValidators() as $validator) {
+            if (!is_subclass_of($validator, AbstractValidator::class)) {
+                throw new InvalidValidatorClass($this->group->getPlugin(), $validator);
+            }
+
+            $error = call_user_func([$validator, 'validate'], $value, $this->getTitle());
+            if (!empty($error)) {
+                // Already invalid. To avoid too many message we will return directly from here
+                return $this->getValidatorMessage($validator) ?? $error;
+            }
+        }
+
+        return null;
+    }
+
+    abstract public function renderInput($displayValue = null): string;
 }

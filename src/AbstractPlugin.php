@@ -4,34 +4,27 @@
  * @noinspection PhpUnused
  */
 
-/**
- * @package vaf-wp-library
- */
-
 namespace VAF\WP\Library;
 
+use Closure;
 use VAF\WP\Library\Exceptions\Module\InvalidModuleClass;
 use VAF\WP\Library\Exceptions\Module\ModuleAlreadyRegistered;
 use VAF\WP\Library\Exceptions\Module\ModuleNotRegistered;
-use VAF\WP\Library\Exceptions\Module\Setting\MissingSettingKey;
-use VAF\WP\Library\Exceptions\Module\Setting\SettingNotRegistered;
-use VAF\WP\Library\Exceptions\Module\Setting\SettingsGroupNotRegistered;
 use VAF\WP\Library\Exceptions\Plugin\PluginAlreadyConfigured;
 use VAF\WP\Library\Exceptions\Plugin\PluginNotConfigured;
 use VAF\WP\Library\Modules\AbstractModule;
 use VAF\WP\Library\Modules\PluginAPIModule;
-use VAF\WP\Library\Modules\SettingsModule;
 use VAF\WP\Library\PluginAPI\AbstractPluginAPI;
 
 abstract class AbstractPlugin
 {
-    //<editor-fold desc="Singleton handling">
+    //<editor-fold defaultstate="collapsed" desc="Singleton handling">
     /***********************
      * Singletone handling *
      ***********************/
 
     /**
-     * @var AbstractPlugin[]
+     * @var AbstractPlugin[] All registered plugin instances
      */
     private static array $instances = [];
 
@@ -49,6 +42,9 @@ abstract class AbstractPlugin
         return self::$instances[static::class];
     }
 
+    /**
+     * Private constructor so a plugin object can only be created once
+     */
     final private function __construct()
     {
         // Init plugin slug with something known to have something
@@ -57,7 +53,7 @@ abstract class AbstractPlugin
     }
     //</editor-fold>
 
-    //<editor-fold desc="Instance handling">
+    //<editor-fold defaultstate="collapsed" desc="Instance handling">
     /*********************
      * Instance handling *
      *********************/
@@ -71,7 +67,6 @@ abstract class AbstractPlugin
      * Configures the plugin to a state it is bootable
      *
      * @return $this
-     * @throws PluginAlreadyConfigured
      */
     final public function configure(string $pluginFile): self
     {
@@ -83,6 +78,9 @@ abstract class AbstractPlugin
 
         $this->pluginFile = $pluginFile;
         $this->pluginSlug = basename(dirname($pluginFile));
+        $this->pluginDirectory = trailingslashit(dirname($pluginFile));
+
+        Template::registerPlugin($this);
 
         $this->configurePlugin();
 
@@ -95,7 +93,6 @@ abstract class AbstractPlugin
      * Starts the plugin and initialises all modules and stuff
      *
      * @return $this
-     * @throws PluginNotConfigured
      */
     final public function start(): self
     {
@@ -111,14 +108,14 @@ abstract class AbstractPlugin
     }
 
     /**
-     * Function to configure additional stuff like modules
+     * Abstract function to configure additional stuff like modules
      *
      * @return $this
      */
     abstract protected function configurePlugin(): self;
     //</editor-fold>
 
-    //<editor-fold desc="Plugin Details">
+    //<editor-fold defaultstate="collapsed" desc="Plugin Details">
     /******************
      * Plugin details *
      ******************/
@@ -132,6 +129,11 @@ abstract class AbstractPlugin
      * @var string Main file of the plugin
      */
     private string $pluginFile;
+
+    /**
+     * @var string Base directory of the plugin
+     */
+    private string $pluginDirectory;
 
     /**
      * Returns the configured plugin slug
@@ -152,9 +154,19 @@ abstract class AbstractPlugin
     {
         return $this->pluginFile;
     }
+
+    /**
+     * Returns the main directory of the plugin
+     *
+     * @return string
+     */
+    final public function getPluginDirectory(): string
+    {
+        return $this->pluginDirectory;
+    }
     //</editor-fold>
 
-    //<editor-fold desc="Module handling">
+    //<editor-fold defaultstate="collapsed" desc="Module handling">
     /*******************
      * Module handling *
      *******************/
@@ -180,14 +192,11 @@ abstract class AbstractPlugin
      * Registers a module with the plugin
      * A configure function can be provided to configure the new module
      *
-     * @param string $moduleClass
-     * @param callable|null $configureFunction
+     * @param  string $moduleClass Class of the module to register
+     * @param  Closure|null $configureFunction Configuration function to set special parameters for the module
      * @return $this
-     * @throws InvalidModuleClass
-     * @throws ModuleAlreadyRegistered
-     * @throws PluginAlreadyConfigured
      */
-    final protected function registerModule(string $moduleClass, ?callable $configureFunction = null): self
+    final protected function registerModule(string $moduleClass, ?Closure $configureFunction = null): self
     {
         if ($this->isConfigured) {
             // Plugin is already configured
@@ -215,7 +224,7 @@ abstract class AbstractPlugin
     /**
      * Checks if a module has been registered
      *
-     * @param string $moduleClass
+     * @param  string $moduleClass Class of the module to check
      * @return bool
      */
     final protected function hasModule(string $moduleClass): bool
@@ -226,7 +235,7 @@ abstract class AbstractPlugin
     /**
      * Returns the requested module if registered
      *
-     * @param string $moduleClass
+     * @param  string $moduleClass Class of the requested module
      * @return AbstractModule|null
      */
     final protected function getModule(string $moduleClass): ?AbstractModule
@@ -235,11 +244,11 @@ abstract class AbstractPlugin
     }
     //</editor-fold>
 
+    //<editor-fold desc="Utility functions" defaultstate="collapsed">
     /**
      * Returns an instance of the plugin API
      *
      * @return AbstractPluginAPI
-     * @throws ModuleNotRegistered
      */
     final public function getPluginAPI(): AbstractPluginAPI
     {
@@ -253,28 +262,5 @@ abstract class AbstractPlugin
 
         return $module->getPluginAPI();
     }
-
-    /**
-     * Returns the value of the requested setting
-     *
-     * @param string $setting
-     * @param bool $returnObject
-     * @return mixed
-     * @throws MissingSettingKey
-     * @throws ModuleNotRegistered
-     * @throws SettingNotRegistered
-     * @throws SettingsGroupNotRegistered
-     */
-    final public function getSetting(string $setting, bool $returnObject = false)
-    {
-        if (!$this->hasModule(SettingsModule::class)) {
-            // Module Settings is not registered
-            throw new ModuleNotRegistered($this, 'Settings');
-        }
-
-        /** @var SettingsModule $module */
-        $module = $this->getModule(SettingsModule::class);
-
-        return $module->getSetting($setting, $returnObject);
-    }
+    //</editor-fold>
 }

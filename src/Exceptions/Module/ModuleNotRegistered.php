@@ -2,11 +2,11 @@
 
 namespace VAF\WP\Library\Exceptions\Module;
 
-use Exception;
+use LogicException;
 use Throwable;
 use VAF\WP\Library\AbstractPlugin;
 
-final class ModuleNotRegistered extends Exception
+final class ModuleNotRegistered extends LogicException
 {
     public function __construct(AbstractPlugin $plugin, string $module, Throwable $previous = null)
     {

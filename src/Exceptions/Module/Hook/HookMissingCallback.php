@@ -1,17 +1,13 @@
 <?php
 
-/**
- * @package vaf-wp-library
- */
-
 namespace VAF\WP\Library\Exceptions\Module\Hook;
 
-use Exception;
+use LogicException;
 use Throwable;
 use VAF\WP\Library\AbstractPlugin;
 use VAF\WP\Library\Modules\AbstractHookModule;
 
-final class HookMissingCallback extends Exception
+final class HookMissingCallback extends LogicException
 {
     public function __construct(
         AbstractPlugin $plugin,

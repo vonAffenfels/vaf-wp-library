@@ -1,53 +1,46 @@
 <?php
 
-/**
- * @noinspection PhpUnused
- */
-
 namespace VAF\WP\Library\Settings;
 
-class EnvAwareTextSetting extends TextSetting
+use VAF\WP\Library\Template;
+
+abstract class EnvAwareTextSetting extends TextSetting
 {
-    /**
-     * @var callable|null
-     */
-    private $envParser = null;
-
-    /**
-     * @var string
-     */
-    private string $envKey = '';
-
     /**
      * @var bool
      */
     private bool $fromEnv = false;
 
-    final public function setEnvKey(string $envKey): self
-    {
-        $this->envKey = $envKey;
-        return $this;
-    }
-
-    final public function setEnvParser(callable $envParser): self
-    {
-        $this->envParser = $envParser;
-        return $this;
-    }
+    abstract protected function getEnvKey(): string;
+    abstract protected function parseEnvValue($value);
 
     final public function isFromEnv(): bool
     {
         return $this->fromEnv;
     }
 
-    protected function parseValue($value)
+    protected function deserialize($value)
     {
-        if (!empty($this->envKey)) {
+        if (!empty($this->getEnvKey())) {
             $env = $this->getEnvValue();
             if (!is_null($env)) {
                 $value = $env;
-                $this->fromEnv = true;
             }
+        }
+
+        return $value;
+    }
+
+    protected function serialize($value)
+    {
+        if (!$this->isLoaded()) {
+            // We need to check if we have an env value
+            $this->getEnvValue();
+        }
+
+        if ($this->isFromEnv()) {
+            // Do not save to database if from env
+            return null;
         }
 
         return $value;
@@ -55,16 +48,28 @@ class EnvAwareTextSetting extends TextSetting
 
     private function getEnvValue()
     {
-        $env = getenv($this->envKey);
+        $env = getenv($this->getEnvKey());
         if (empty($env)) {
             return null;
         }
 
-        if (is_callable($this->envParser)) {
-            $parser = $this->envParser;
-            $env = $parser($env);
+        $env = $this->parseEnvValue($env);
+        if (!is_null($env)) {
+            $this->fromEnv = true;
         }
 
         return $env;
+    }
+
+    /**
+     * @return string
+     */
+    public function renderInput($displayValue = null): string
+    {
+        return Template::render('VafWpLibrary/AdminPages/SettingsPage/Fields/Text', [
+            'slug' => $this->getSlug(),
+            'value' => $displayValue ?? $this->getValue(),
+            'readonly' => $this->isFromEnv()
+        ]);
     }
 }

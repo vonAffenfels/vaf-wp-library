@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @package vaf-wp-library
- */
-
 namespace VAF\WP\Library\Modules;
 
 use VAF\WP\Library\Exceptions\Module\Hook\HookInvalidConfiguration;
@@ -22,9 +18,6 @@ abstract class AbstractHookModule extends AbstractModule
 
     /**
      * Starts the hook module
-     *
-     * @throws HookMissingCallback
-     * @throws HookInvalidConfiguration
      */
     final public function start(): void
     {

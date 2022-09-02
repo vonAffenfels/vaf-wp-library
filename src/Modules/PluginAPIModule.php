@@ -1,11 +1,9 @@
 <?php
 
-/**
- * @noinspection PhpUnused
- */
-
 namespace VAF\WP\Library\Modules;
 
+use Closure;
+use VAF\WP\Library\Exceptions\Module\PluginAPI\InvalidAPIClass;
 use VAF\WP\Library\PluginAPI\AbstractPluginAPI;
 
 final class PluginAPIModule extends AbstractHookModule
@@ -13,12 +11,16 @@ final class PluginAPIModule extends AbstractHookModule
     /**
      * Returns a callable that is run to configure the module
      *
-     * @param string $apiClass
+     * @param  string $apiClass
      * @return callable
      */
-    final public static function configure(string $apiClass): callable
+    final public static function configure(string $apiClass): Closure
     {
         return function (PluginAPIModule $module) use ($apiClass) {
+            if (!is_subclass_of($apiClass, AbstractPluginAPI::class)) {
+                throw new InvalidAPIClass($this->getPlugin(), $apiClass);
+            }
+
             $module->apiClass = $apiClass;
         };
     }

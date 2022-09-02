@@ -2,18 +2,16 @@
 
 namespace VAF\WP\Library\Exceptions\Module\Setting;
 
-use Exception;
+use LogicException;
 use Throwable;
-use VAF\WP\Library\AbstractPlugin;
 
-final class SettingsGroupNotRegistered extends Exception
+final class SettingsGroupNotRegistered extends LogicException
 {
-    public function __construct(AbstractPlugin $plugin, string $settingsGroup, Throwable $previous = null)
+    final public function __construct(string $group, Throwable $previous = null)
     {
         $message = sprintf(
-            '[Plugin %s] Settingsgroup "%s" is not registered!',
-            $plugin->getPluginSlug(),
-            $settingsGroup
+            '[Module Settings] Settingsgroup %s is not registered.',
+            $group
         );
         parent::__construct($message, 0, $previous);
     }

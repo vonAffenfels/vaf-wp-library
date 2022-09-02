@@ -2,92 +2,243 @@
 
 namespace VAF\WP\Library\Settings;
 
-use InvalidArgumentException;
+use VAF\WP\Library\AbstractPlugin;
+use VAF\WP\Library\Exceptions\Module\Setting\InvalidSettingsClass;
+use VAF\WP\Library\Exceptions\Module\Setting\SettingsGroupAlreadyRegistered;
+use VAF\WP\Library\Exceptions\Module\Setting\SettingsGroupNotRegistered;
 
-final class SettingsGroup
+/**
+ * Base class to represent a settingsgroup
+ */
+abstract class SettingsGroup
 {
     /**
-     * @var string Key for the settings group
+     * Function to return the slug of the settingsgroup
+     * Is used to define the name inside the database
+     *
+     * @return string
      */
-    private string $key;
+    abstract public function getSlug(): string;
 
     /**
-     * @var string Name to display
+     * Returns the title of the settingsgroup
+     *
+     * @return string
      */
-    private string $name;
+    abstract public function getTitle(): string;
 
     /**
-     * @var string Additional description
+     * Returns the description text of the settings group
+     * Will be displayed at the settings page under the title
+     *
+     * @return string
      */
-    private string $description;
+    abstract public function getDescription(): string;
 
     /**
-     * @var AbstractSetting[] Settings of the settingsgroup
+     * Returns a list of settings classes to register with this settingsgroup
+     *
+     * @return array
      */
-    private array $settings;
+    abstract protected function getSettingsToRegister(): array;
 
     /**
-     * @param string $key
-     * @param string $name
-     * @param string $description
-     * @param AbstractSetting[] $settings
-     */
-    final public function __construct(string $key, string $name, string $description, array $settings)
-    {
-        $this->key = $key;
-        $this->name = $name;
-        $this->description = $description;
-
-        foreach ($settings as $setting) {
-            if (!($setting instanceof AbstractSetting)) {
-                throw new InvalidArgumentException(
-                    'Parameter "$settings" must be an array of objects of class AbstractSetting'
-                );
-            }
-
-            $this->settings[$setting->getKey()] = $setting;
-        }
-    }
-
-    final public function getSetting(string $key): ?AbstractSetting
-    {
-        if (!$this->hasSetting($key)) {
-            return null;
-        }
-
-        return $this->settings[$key];
-    }
-
-    /**
-     * @param string $key
+     * Returns true if the settingsgroup should be loaded at every request
+     *
      * @return bool
      */
-    final public function hasSetting(string $key): bool
+    protected function isAutoLoad(): bool
     {
-        return isset($this->settings[$key]);
+        return false;
     }
 
     /**
-     * @return string
+     * @var array Values for all saved settings
      */
-    final public function getKey(): string
+    private array $values = [];
+
+    /**
+     * @var bool Determines if this settingsgroup has been loaded from database
+     */
+    private bool $loaded = false;
+
+    /**
+     * @var bool Determines if a value has been changed
+     */
+    private bool $dirty = false;
+
+    /**
+     * @var AbstractPlugin Reference to the plugin object where this settingsgroup belongs to
+     */
+    private AbstractPlugin $plugin;
+
+    /**
+     * @var SettingsGroup[] List of instances of all registered settingsgroups
+     */
+    private static array $instances;
+
+    /**
+     * @var AbstractSetting[] List of settings objects for this settingsgroup
+     */
+    private array $settings = [];
+
+    /**
+     * Constructor
+     *
+     * @param AbstractPlugin $plugin
+     * @throws SettingsGroupAlreadyRegistered
+     * @throws InvalidSettingsClass
+     */
+    final public function __construct(AbstractPlugin $plugin)
     {
-        return $this->key;
+        $classname = get_class($this);
+        if (isset(self::$instances[$classname])) {
+            throw new SettingsGroupAlreadyRegistered($this->getPlugin(), $classname);
+        }
+        self::$instances[$classname] = $this;
+
+        $this->plugin = $plugin;
+
+        foreach ($this->getSettingsToRegister() as $setting) {
+            if (!is_subclass_of($setting, AbstractSetting::class)) {
+                throw new InvalidSettingsClass($this->getPlugin(), $setting);
+            }
+
+            $settingObj = new $setting($this);
+            $this->settings[$settingObj->getSlug()] = $settingObj;
+        }
     }
 
     /**
-     * @return string
+     * Return all registered setting objects
+     *
+     * @return AbstractSetting[]
      */
-    final public function getName(): string
+    final public function getSettings(): array
     {
-        return $this->name;
+        return array_values($this->settings);
     }
 
     /**
-     * @return string
+     * Return a specific setting object identified by $slug
+     *
+     * @param string $slug
+     * @return AbstractSetting
      */
-    final public function getDescription(): string
+    final private function getSetting(string $slug): AbstractSetting
     {
-        return $this->description;
+        return $this->settings[$slug];
+    }
+
+    /**
+     * Gets the instance of a specific settingsgroup
+     *
+     * @return SettingsGroup
+     */
+    final public static function getInstance(): SettingsGroup
+    {
+        $classname = static::class;
+        if (!isset(self::$instances[$classname])) {
+            throw new SettingsGroupNotRegistered($classname);
+        }
+
+        return self::$instances[$classname];
+    }
+
+    /**
+     * Returns the plugin reference associated with the settingsgroup
+     *
+     * @return AbstractPlugin
+     */
+    final public function getPlugin(): AbstractPlugin
+    {
+        return $this->plugin;
+    }
+
+    /**
+     * Load all values from the database if not already done
+     *
+     * @return void
+     */
+    final private function loadValues(): void
+    {
+        if ($this->loaded) {
+            return;
+        }
+
+        $this->values = get_option(
+            $this->getPlugin()->getPluginSlug() . '-' . $this->getSlug(),
+            []
+        );
+        $this->loaded = true;
+    }
+
+    /**
+     * Returns true if the values have been loaded from the database
+     *
+     * @return bool
+     */
+    final private function isLoaded(): bool
+    {
+        return $this->loaded;
+    }
+
+    /**
+     * Returns the value of a specific setting identified by $slug
+     * If setting is not found inside the values null will be returned
+     *
+     * @param string $slug
+     * @return mixed|null
+     */
+    final public function getValue(string $slug)
+    {
+        $this->loadValues();
+
+        return $this->values[$slug] ?? null;
+    }
+
+    /**
+     * Sets a value for a specific setting inside the settingsgroup
+     *
+     * @param string $slug
+     * @param $value
+     * @return $this
+     */
+    final public function setValue(string $slug, $value): self
+    {
+        // Only save if different
+        $existingValue = $this->getValue($slug);
+        if ($existingValue !== $value) {
+            if (is_null($value)) {
+                unset($this->values[$slug]);
+            } else {
+                $this->values[$slug] = $value;
+            }
+
+            $this->getSetting($slug)->forceReload();
+            $this->dirty = true;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Saves the group values in the database if there was a change
+     *
+     * @return $this
+     */
+    final public function saveGroup(): self
+    {
+        if ($this->dirty) {
+            update_option(
+                $this->getPlugin()->getPluginSlug() . '-' . $this->getSlug(),
+                $this->values,
+                $this->isAutoLoad()
+            );
+
+            $this->dirty = false;
+        }
+
+        return $this;
     }
 }

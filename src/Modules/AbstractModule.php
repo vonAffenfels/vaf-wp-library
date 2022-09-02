@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @package vaf-wp-library
- */
-
 namespace VAF\WP\Library\Modules;
 
 use VAF\WP\Library\AbstractPlugin;
@@ -30,7 +26,7 @@ abstract class AbstractModule
 
     /**
      * @param AbstractPlugin $plugin
-     * @param callable|null $configureFunction
+     * @param callable|null  $configureFunction
      */
     final public function __construct(AbstractPlugin $plugin, ?callable $configureFunction)
     {

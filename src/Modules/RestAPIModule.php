@@ -1,14 +1,5 @@
 <?php
 
-/**
- * @noinspection PhpUnused
- * @noinspection PhpUnusedParameterInspection
- */
-
-/**
- * @package vaf-wp-library
- */
-
 namespace VAF\WP\Library\Modules;
 
 use Closure;
@@ -21,14 +12,21 @@ final class RestAPIModule extends AbstractHookModule
     /**
      * Returns a callable that is run to configure the module
      *
-     * @param array $routes
-     * @param string $restNamespace
+     * @param  array  $routes
+     * @param  string $restNamespace
      * @return callable
      */
-    final public static function configure(array $routes, string $restNamespace): callable
+    final public static function configure(array $routes, string $restNamespace): Closure
     {
         return function (RestAPIModule $module) use ($routes, $restNamespace) {
-            $module->routes = $routes;
+            foreach ($routes as $route) {
+                if (!is_subclass_of($route, RestAPIModule::class)) {
+                    throw new InvalidRouteClass($this->getPlugin(), $route);
+                }
+
+                $module->routes[] = $route;
+            }
+
             $module->restNamespace = $restNamespace;
         };
     }
@@ -57,15 +55,8 @@ final class RestAPIModule extends AbstractHookModule
         ];
     }
 
-    /**
-     * @throws InvalidRouteClass
-     */
     private function registerRestRoute(string $classname): void
     {
-        if (!is_subclass_of($classname, Route::class)) {
-            throw new InvalidRouteClass($this->getPlugin(), $classname);
-        }
-
         /** @var Route $route */
         $route = new $classname();
 
@@ -86,7 +77,7 @@ final class RestAPIModule extends AbstractHookModule
     }
 
     /**
-     * @param Route $route
+     * @param  Route $route
      * @return array
      */
     final private function getArguments(Route $route): array
