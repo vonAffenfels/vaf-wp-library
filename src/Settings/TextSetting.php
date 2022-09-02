@@ -2,7 +2,6 @@
 
 namespace VAF\WP\Library\Settings;
 
-use VAF\WP\Library\Request;
 use VAF\WP\Library\Template;
 
 abstract class TextSetting extends AbstractSetting
