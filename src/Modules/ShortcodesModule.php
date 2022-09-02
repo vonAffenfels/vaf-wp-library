@@ -23,7 +23,7 @@ final class ShortcodesModule extends AbstractModule
         return function (ShortcodesModule $module) use ($shortcodes) {
             foreach ($shortcodes as $shortcode) {
                 if (!is_subclass_of($shortcode, Shortcode::class)) {
-                    throw new InvalidShortcodeClass($this->getPlugin(), $shortcode);
+                    throw new InvalidShortcodeClass($module->getPlugin(), $shortcode);
                 }
 
                 $module->shortcodes[] = $shortcode;
