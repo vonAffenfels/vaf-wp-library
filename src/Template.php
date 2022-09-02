@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @noinspection PhpUnused
+ */
+
 namespace VAF\WP\Library;
 
 use Closure;
@@ -9,6 +13,9 @@ use VAF\WP\Library\Exceptions\Template\TemplateNotFound;
 use VAF\WP\Library\Templates\AbstractTemplate;
 use VAF\WP\Library\Templates\PHTMLTemplate;
 
+/**
+ * Template Engine
+ */
 final class Template
 {
     /**
@@ -51,7 +58,7 @@ final class Template
     /**
      * Registers the namespace for a plugin and adds all necessary directories
      *
-     * @param  AbstractPlugin $plugin Plugin to register
+     * @param AbstractPlugin $plugin Plugin to register
      * @return void
      */
     final public static function registerPlugin(AbstractPlugin $plugin): void
@@ -121,6 +128,9 @@ final class Template
      * @param  string $template The template to render. First part should be the namespace
      * @param  array $context All the data that should be known to the template
      * @return string
+     * @throws InvalidArgumentException
+     * @throws NamespaceNotRegistered
+     * @throws TemplateNotFound
      */
     final public static function render(string $template, array $context = []): string
     {
@@ -169,8 +179,10 @@ final class Template
     }
 
     /**
-     * @param string $template
-     * @param array $context
+     * Echos a rendered template
+     *
+     * @param  string $template The template to render. First part should be the namespace
+     * @param  array $context All the data that should be known to the template
      * @return void
      */
     final public static function output(string $template, array $context = []): void

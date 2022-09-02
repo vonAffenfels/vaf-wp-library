@@ -4,26 +4,23 @@
  * @noinspection PhpUnused
  */
 
-/**
- * @package vaf-wp-library
- */
-
 namespace VAF\WP\Library\RestAPI;
 
 use Exception;
 use WP_REST_Request;
 
+/**
+ * Base class for a route for the Rest API
+ */
 abstract class Route
 {
+    /**
+     * List of constants for HTTP methods supported by the Rest API
+     */
     protected const METHOD_GET = 'GET';
     protected const METHOD_POST = 'POST';
     protected const METHOD_DELETE = 'DELETE';
     protected const METHOD_PUT = 'PUT';
-
-    //<editor-fold desc="Abstract function definitions">
-    /*********************************
-     * Abstract function definitions *
-     *********************************/
 
     /**
      * Should return the HTTP method the route is listening to
@@ -61,22 +58,23 @@ abstract class Route
     abstract public function getArguments(): array;
 
     /**
-     * Returns weather the current user has the permission to use this route
+     * Returns wether the current user has the permission to use this route
      *
      * @return bool
      */
     abstract public function checkPermission(): bool;
 
     /**
-     * Handling of the route
+     * Handler of the route
      *
      * @param  WP_REST_Request $request
      * @return array|null
      */
     abstract protected function handle(WP_REST_Request $request): ?array;
-    //</editor-fold>
 
     /**
+     * Function to handle the request and the response
+     *
      * @param  WP_REST_Request $request
      * @return false[]
      */

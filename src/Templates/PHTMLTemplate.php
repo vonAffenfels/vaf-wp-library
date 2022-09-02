@@ -26,9 +26,7 @@ final class PHTMLTemplate extends AbstractTemplate
     }
 
     /**
-     * Returns the extension (without a dot) that this engine does handle
-     *
-     * @return string
+     * @inheritDoc
      */
     final public static function getTemplateExtension(): string
     {
@@ -36,11 +34,7 @@ final class PHTMLTemplate extends AbstractTemplate
     }
 
     /**
-     * Registers a custom function with this engine
-     *
-     * @param  string $name Name of the function
-     * @param  Closure $function The function itself
-     * @return void
+     * @inheritDoc
      */
     final public static function registerFunction(string $name, Closure $function): void
     {
@@ -52,10 +46,7 @@ final class PHTMLTemplate extends AbstractTemplate
     }
 
     /**
-     * De-Registers a custom function with this engine
-     *
-     * @param  string $name Name of the function
-     * @return void
+     * @inheritDoc
      */
     final public static function deregisterFunction(string $name): void
     {

@@ -6,13 +6,11 @@
 
 namespace VAF\WP\Library\Shortcodes;
 
+/**
+ * Base class for shortcodes
+ */
 abstract class Shortcode
 {
-    //<editor-fold defaultstate="collapsed" desc="Abstract function definition">
-    /********************************
-     * Abstract function definition *
-     ********************************/
-
     /**
      * Function should return the name of the shortcode
      *
@@ -38,9 +36,7 @@ abstract class Shortcode
      * @return array
      */
     abstract protected function getAttributes(): array;
-    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Callback">
     /**
      * Callback to handle the shortcode
      *
@@ -55,5 +51,4 @@ abstract class Shortcode
 
         return $this->handle($attributes, $content);
     }
-    //</editor-fold>
 }

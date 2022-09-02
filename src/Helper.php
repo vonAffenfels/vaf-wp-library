@@ -2,19 +2,11 @@
 
 namespace VAF\WP\Library;
 
+/**
+ * Class with static helper functions
+ */
 final class Helper
 {
-    /**
-     * Sanitizes a string so that it can be used as a key
-     *
-     * @param  string $value
-     * @return string
-     */
-    final public static function sanitizeKey(string $value): string
-    {
-        return preg_replace('/[^A-Za-z0-9_\-]/', '', $value);
-    }
-
     /**
      * Converts a string like kebab case to a camel case string
      *
@@ -25,11 +17,6 @@ final class Helper
     final public static function camelize(string $input, string $seperator = '-'): string
     {
         return str_replace($seperator, '', ucwords($input, $seperator));
-    }
-
-    final public static function kebapCase(string $input): string
-    {
-        return strtolower(preg_replace('/[A-Z1-9]/', '-\\0', lcfirst($input)));
     }
 
     /**

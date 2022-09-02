@@ -5,6 +5,9 @@ namespace VAF\WP\Library\Templates;
 use Closure;
 use VAF\WP\Library\Exceptions\Template\TemplateFileNotFound;
 
+/**
+ * Base class for template rendering engines
+ */
 abstract class AbstractTemplate
 {
     /**
@@ -21,6 +24,7 @@ abstract class AbstractTemplate
      * Creates a new template object. Checks if the provided file exists and is readable
      *
      * @param  string $templateFile
+     * @throws TemplateFileNotFound
      */
     final public function __construct(string $templateFile)
     {
@@ -32,7 +36,7 @@ abstract class AbstractTemplate
     }
 
     /**
-     * Getter for the template file
+     * Returns the template file
      *
      * @return string
      */
@@ -42,7 +46,7 @@ abstract class AbstractTemplate
     }
 
     /**
-     * Setter for the template data
+     * Sets the data available to the template
      *
      * @param  array $data
      * @return $this
@@ -54,7 +58,7 @@ abstract class AbstractTemplate
     }
 
     /**
-     * Getter for the template data
+     * Gets the data available for the template
      *
      * @return array
      */
@@ -64,21 +68,21 @@ abstract class AbstractTemplate
     }
 
     /**
-     * Abstract function that renders the template and returns the rendered content
+     * Function that renders the template and returns the rendered content
      *
      * @return string
      */
     abstract public function render(): string;
 
     /**
-     * Abstract function that should return the file extension (without a dot) that this engine will handle
+     * Function that should return the file extension (without a dot) that this engine will handle
      *
      * @return string
      */
     abstract public static function getTemplateExtension(): string;
 
     /**
-     * Abstract function to register a custom function with this engine
+     * Function to register a custom function with this engine
      *
      * @param  string $name Name of the function
      * @param  Closure $function The function itself
@@ -87,7 +91,7 @@ abstract class AbstractTemplate
     abstract public static function registerFunction(string $name, Closure $function): void;
 
     /**
-     * Abstract function to deregister a custom function with this engine
+     * Function to deregister a custom function with this engine
      *
      * @param  string $name Name of the function
      * @return void

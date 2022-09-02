@@ -6,19 +6,43 @@
 
 namespace VAF\WP\Library;
 
+/**
+ * Class to represent a request object
+ * Has helper functions to determine the request method and also to access parameters
+ */
 final class Request
 {
+    /**
+     * List of parameter types to access
+     */
     public const TYPE_ALL = 0;
     public const TYPE_GET = 1;
     public const TYPE_POST = 2;
     public const TYPE_SERVER = 3;
 
+    /**
+     * @var Request|null Singleton object
+     */
     private static ?Request $instance = null;
 
+    /**
+     * @var array All available GET parameters
+     */
     private array $get;
+
+    /**
+     * @var array All available POST parameters
+     */
     private array $post;
+
+    /**
+     * @var array All available server parameters
+     */
     private array $server;
 
+    /**
+     * Constructor
+     */
     final private function __construct()
     {
         $this->get = $_GET;
@@ -26,7 +50,13 @@ final class Request
         $this->server = $_SERVER;
     }
 
-    final static public function getInstance(): Request
+    /**
+     * Returns the singleton instance
+     * If none exist it creates one
+     *
+     * @return Request
+     */
+    final public static function getInstance(): Request
     {
         if (is_null(self::$instance)) {
             self::$instance = new self();
@@ -35,6 +65,12 @@ final class Request
         return self::$instance;
     }
 
+    /**
+     * Returns all parameters for a specific type
+     *
+     * @param int $type
+     * @return array
+     */
     final public function getParams(int $type = self::TYPE_ALL): array
     {
         switch ($type) {
@@ -54,6 +90,14 @@ final class Request
         return [];
     }
 
+    /**
+     * Returns the requested parameter
+     *
+     * @param string $key
+     * @param int $type
+     * @param $default
+     * @return mixed|null
+     */
     final public function getParam(string $key, int $type = self::TYPE_ALL, $default = null)
     {
         $params = $this->getParams($type);
@@ -62,7 +106,8 @@ final class Request
     }
 
     /**
-     * Returns if request is an ajax request.
+     * Returns true if request is an ajax request.
+     *
      * @return bool
      */
     final public function isAjaxRequest(): bool
@@ -71,7 +116,8 @@ final class Request
     }
 
     /**
-     * Returns if request is a post request.
+     * Returns true if request is a POST request.
+     *
      * @return bool
      */
     final public function isPost(): bool
@@ -80,7 +126,8 @@ final class Request
     }
 
     /**
-     * Returns if request is a get request.
+     * Returns true if request is a GET request.
+     *
      * @return bool
      */
     final public function isGet(): bool
@@ -89,7 +136,8 @@ final class Request
     }
 
     /**
-     * Returns true if request is a https request.
+     * Returns true if request is a HTTPS request.
+     *
      * @return bool
      */
     final public function isSsl(): bool
@@ -99,6 +147,7 @@ final class Request
 
     /**
      * Returns true if the browser that has sent the request supports WebP
+     *
      * @return bool
      */
     final public function supportsWebP(): bool

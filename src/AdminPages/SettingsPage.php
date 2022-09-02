@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @noinspection PhpUnused
+ */
+
 namespace VAF\WP\Library\AdminPages;
 
 use VAF\WP\Library\Request;
@@ -7,14 +11,26 @@ use VAF\WP\Library\Settings\AbstractSetting;
 use VAF\WP\Library\Settings\SettingsGroup;
 use VAF\WP\Library\Template;
 
+/**
+ * Class to represent a settings page
+ * Should be overwritten by the plugin to determine the settings group to display
+ */
 abstract class SettingsPage extends AdminPage
 {
+    /**
+     * Function that should return the instance of the settings group to display
+     *
+     * @return SettingsGroup
+     */
     abstract protected function getSettingsGroup(): SettingsGroup;
 
+    /**
+     * @var array Array containing all the send over values of errornous fields
+     */
     private array $errorFieldValues = [];
 
     /**
-     * @return string
+     * @inheritDoc
      */
     final public function render(): string
     {
@@ -37,6 +53,13 @@ abstract class SettingsPage extends AdminPage
         ]);
     }
 
+    /**
+     * Handle the update of the settings
+     *
+     * @param SettingsGroup $group
+     * @param string $nonce
+     * @return bool
+     */
     final private function handleUpdate(SettingsGroup $group, string $nonce): bool
     {
         if (!check_admin_referer($nonce)) {
@@ -57,7 +80,7 @@ abstract class SettingsPage extends AdminPage
             if (empty($fieldError)) {
                 $setting->setValue($fieldValue);
             } else {
-                add_settings_error($setting->getTitle(), $setting->getSlug(), $fieldError, 'error');
+                add_settings_error($setting->getTitle(), $setting->getSlug(), $fieldError);
                 $this->errorFieldValues[$setting->getSlug()] = $fieldValue;
                 $success = false;
             }

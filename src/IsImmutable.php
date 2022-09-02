@@ -4,6 +4,9 @@ namespace VAF\WP\Library;
 
 use VAF\WP\Library\Exceptions\ObjectIsLocked;
 
+/**
+ * Trait that can make an object immutable at runtime
+ */
 trait IsImmutable
 {
     /**
@@ -26,6 +29,7 @@ trait IsImmutable
      * Checks if the object is locked and throws an exception if so
      *
      * @return void
+     * @throws ObjectIsLocked
      */
     final public function checkLock()
     {
