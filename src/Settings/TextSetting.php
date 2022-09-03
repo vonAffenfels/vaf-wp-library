@@ -27,6 +27,7 @@ abstract class TextSetting extends AbstractSetting
     }
 
     /**
+     * @param null $displayValue
      * @return string
      */
     public function renderInput($displayValue = null): string

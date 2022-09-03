@@ -2,6 +2,7 @@
 
 namespace VAF\WP\Library\Settings;
 
+use VAF\WP\Library\AbstractPlugin;
 use VAF\WP\Library\Exceptions\Module\Setting\SettingAlreadyRegistered;
 use VAF\WP\Library\Exceptions\Module\Setting\SettingNotRegistered;
 use VAF\WP\Library\Exceptions\Validator\InvalidValidatorClass;
@@ -16,6 +17,16 @@ abstract class AbstractSetting
     private $value;
 
     /**
+     * @var mixed
+     */
+    private $dbValue;
+
+    /**
+     * @var bool
+     */
+    private bool $dirty = false;
+
+    /**
      * @var AbstractSetting[] List of all instances. Key is the classname.
      */
     private static array $instances = [];
@@ -25,20 +36,28 @@ abstract class AbstractSetting
      */
     private bool $loaded = false;
 
-    private SettingsGroup $group;
+    /**
+     * @var AbstractPlugin
+     */
+    private AbstractPlugin $plugin;
 
     /**
-     * @param SettingsGroup $group
+     * @param AbstractPlugin $plugin
      */
-    final public function __construct(SettingsGroup $group)
+    final public function __construct(AbstractPlugin $plugin)
     {
         $classname = get_class($this);
         if (isset(self::$instances[$classname])) {
-            throw new SettingAlreadyRegistered($group->getPlugin(), $classname);
+            throw new SettingAlreadyRegistered($plugin, $classname);
         }
         self::$instances[$classname] = $this;
 
-        $this->group = $group;
+        $this->plugin = $plugin;
+    }
+
+    final protected function getPlugin(): AbstractPlugin
+    {
+        return $this->plugin;
     }
 
     abstract public function getSlug(): string;
@@ -63,17 +82,28 @@ abstract class AbstractSetting
         return null;
     }
 
+    /**
+     * Returns true if the settingsgroup should be loaded at every request
+     *
+     * @return bool
+     */
+    protected function isAutoLoad(): bool
+    {
+        return false;
+    }
+
     final public function isLoaded(): bool
     {
         return $this->loaded;
     }
 
     /**
+     * @param string|null $class
      * @return AbstractSetting
      */
-    final private static function getInstance(): AbstractSetting
+    final public static function getInstance(?string $class = null): AbstractSetting
     {
-        $classname = static::class;
+        $classname = $class ?? static::class;
         if (!isset(self::$instances[$classname])) {
             throw new SettingNotRegistered($classname);
         }
@@ -82,45 +112,63 @@ abstract class AbstractSetting
     }
 
     /**
+     * Loads the value directly from database
+     *
+     * @return void
+     */
+    final private function loadValue()
+    {
+        if ($this->isLoaded()) {
+            // If already loaded do nothing
+            return;
+        }
+
+        $this->dbValue = get_option(
+            $this->getPlugin()->getPluginSlug() . '-' . $this->getSlug(),
+            null
+        );
+
+        if (is_null($this->dbValue)) {
+            $this->value = $this->getDefault();
+        } else {
+            $this->value = $this->deserialize($this->dbValue);
+        }
+
+        $this->loaded = true;
+    }
+
+    /**
      * @return mixed
      */
     final public static function getValue()
     {
         $instance = static::getInstance();
-        if (!$instance->isLoaded()) {
-            $instance->loadValue();
-        }
+        $instance->loadValue();
 
         return $instance->value;
     }
 
+    /**
+     * @param $value
+     * @return void
+     */
     final public static function setValue($value): void
     {
         $instance = static::getInstance();
 
-        $value = $instance->serialize($value);
-        $instance->group->setValue($instance->getSlug(), $value);
-    }
+        // Get new database representation of provided value
+        $newDbValue = $instance->serialize($value);
 
-    final private function loadValue()
-    {
-        $value = $this->group->getValue($this->getSlug());
-
-        if (is_null($value)) {
-            $value = $this->getDefault();
+        if ($newDbValue !== $instance->dbValue) {
+            // Get new internal representation of new value
+            $instance->value = $instance->deserialize($value);
+            $instance->dbValue = $newDbValue;
+            $instance->dirty = true;
         }
-
-        $this->value = $this->deserialize($value);
-        $this->loaded = true;
-    }
-
-    final public function forceReload(): self
-    {
-        $this->loaded = false;
-        return $this;
     }
 
     /**
+     * @param null $displayValue
      * @return string
      */
     final public function render($displayValue = null): string
@@ -137,7 +185,7 @@ abstract class AbstractSetting
     {
         foreach ($this->getValidators() as $validator) {
             if (!is_subclass_of($validator, AbstractValidator::class)) {
-                throw new InvalidValidatorClass($this->group->getPlugin(), $validator);
+                throw new InvalidValidatorClass($this->getPlugin(), $validator);
             }
 
             $error = call_user_func([$validator, 'validate'], $value, $this->getTitle());
@@ -148,6 +196,21 @@ abstract class AbstractSetting
         }
 
         return null;
+    }
+
+    final public function save(): self
+    {
+        if ($this->dirty) {
+            update_option(
+                $this->getPlugin()->getPluginSlug() . '-' . $this->getSlug(),
+                $this->dbValue,
+                $this->isAutoLoad()
+            );
+
+            $this->dirty = false;
+        }
+
+        return $this;
     }
 
     abstract public function renderInput($displayValue = null): string;

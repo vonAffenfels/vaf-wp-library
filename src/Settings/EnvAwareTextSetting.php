@@ -62,6 +62,7 @@ abstract class EnvAwareTextSetting extends TextSetting
     }
 
     /**
+     * @param null $displayValue
      * @return string
      */
     public function renderInput($displayValue = null): string
@@ -71,5 +72,20 @@ abstract class EnvAwareTextSetting extends TextSetting
             'value' => $displayValue ?? $this->getValue(),
             'readonly' => $this->isFromEnv()
         ]);
+    }
+
+    protected function getDefault(): string
+    {
+        $value = parent::getDefault();
+
+        // Default to the env content
+        if (!empty($this->getEnvKey())) {
+            $env = $this->getEnvValue();
+            if (!is_null($env)) {
+                $value = $env;
+            }
+        }
+
+        return $value;
     }
 }

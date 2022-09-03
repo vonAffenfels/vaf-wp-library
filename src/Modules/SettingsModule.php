@@ -3,35 +3,31 @@
 namespace VAF\WP\Library\Modules;
 
 use Closure;
-use VAF\WP\Library\Exceptions\Module\Setting\InvalidSettingsGroupClass;
-use VAF\WP\Library\Settings\SettingsGroup;
+use VAF\WP\Library\Exceptions\Module\Setting\InvalidSettingsClass;
+use VAF\WP\Library\Settings\AbstractSetting;
 
 final class SettingsModule extends AbstractModule
 {
-    //<editor-fold defaulstate="collapsed" desc="Configure functions">
     /**
      * Returns a callable that is run to configure the module
      *
-     * @param  string[] $settingsGroups
+     * @param  string[] $settings
      * @return Closure
      */
-    final public static function configure(array $settingsGroups): Closure
+    final public static function configure(array $settings): Closure
     {
-        return function (SettingsModule $module) use ($settingsGroups) {
-            foreach ($settingsGroups as $settingsGroup) {
-                if (!is_subclass_of($settingsGroup, SettingsGroup::class)) {
-                    throw new InvalidSettingsGroupClass($module->getPlugin(), $settingsGroup);
+        return function (SettingsModule $module) use ($settings) {
+            foreach ($settings as $setting) {
+                if (!is_subclass_of($setting, AbstractSetting::class)) {
+                    throw new InvalidSettingsClass($module->getPlugin(), $setting);
                 }
 
-                new $settingsGroup($module->getPlugin());
+                new $setting($module->getPlugin());
             }
         };
     }
-    //</editor-fold>
 
-    //<editor-fold defaulstate="collapsed" desc="Module management">
     final public function start(): void
     {
     }
-    //</editor-fold>
 }

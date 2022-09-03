@@ -8,7 +8,6 @@ namespace VAF\WP\Library\AdminPages;
 
 use VAF\WP\Library\Request;
 use VAF\WP\Library\Settings\AbstractSetting;
-use VAF\WP\Library\Settings\SettingsGroup;
 use VAF\WP\Library\Template;
 
 /**
@@ -18,78 +17,66 @@ use VAF\WP\Library\Template;
 abstract class SettingsPage extends AdminPage
 {
     /**
-     * Function that should return the instance of the settings group to display
+     * Function that should return an array with the classnames of the settings display
      *
-     * @return SettingsGroup
+     * @return array
      */
-    abstract protected function getSettingsGroup(): SettingsGroup;
-
-    /**
-     * @var array Array containing all the send over values of errornous fields
-     */
-    private array $errorFieldValues = [];
+    abstract protected function getSettings(): array;
 
     /**
      * @inheritDoc
      */
     final public function render(): string
     {
-        $group = $this->getSettingsGroup();
-        $nonce = 'vaf-settings-page-' . $group->getSlug();
+        $nonce = 'vaf-settings-page-' . $this->getMenu()->getSlug();
         $request = Request::getInstance();
 
-        if ($request->isPost() && $request->getParam('action', Request::TYPE_POST, '') === 'update') {
-            if ($this->handleUpdate($group, $nonce)) {
-                add_settings_error($group->getTitle(), $group->getSlug(), 'Settings saved successfully', 'success');
+        $isPost = $request->isPost();
+        $isUpdate = $request->getParam('action', Request::TYPE_POST, '') === 'update';
+        if ($isPost && $isUpdate && check_admin_referer($nonce)) {
+            $success = true;
+
+            foreach ($this->getSettings() as $setting) {
+                $settingObj = AbstractSetting::getInstance($setting);
+
+                $fieldValue = $request->getParam($settingObj->getSlug(), Request::TYPE_POST);
+                if (is_null($fieldValue)) {
+                    continue;
+                }
+
+                $fieldError = $settingObj->validate($fieldValue);
+
+                if (empty($fieldError)) {
+                    $settingObj->setValue($fieldValue);
+                } else {
+                    add_settings_error($settingObj->getTitle(), $settingObj->getSlug(), $fieldError);
+                    $success = false;
+                }
+            }
+
+            if ($success) {
+                // Now we can save the values into the database
+                foreach ($this->getSettings() as $setting) {
+                    $settingObj = AbstractSetting::getInstance($setting);
+                    $settingObj->save();
+                }
+
+                add_settings_error(
+                    $this->getTitle(),
+                    $this->getMenu()->getSlug(),
+                    'Settings saved successfully',
+                    'success'
+                );
             }
         }
+
         return Template::render('VafWpLibrary/AdminPages/SettingsPage/Wrapper', [
-            'title' => $group->getTitle(),
-            'description' => $group->getDescription(),
-            'settings' => array_map(function (AbstractSetting $setting): string {
-                return $setting->render($this->errorFieldValues[$setting->getSlug()] ?? null);
-            }, $group->getSettings()),
+            'title' => $this->getTitle(),
+            'settings' => array_map(function (string $setting) use ($request): string {
+                $settingObj = AbstractSetting::getInstance($setting);
+                return $settingObj->render($request->getParam($settingObj->getSlug(), Request::TYPE_POST));
+            }, $this->getSettings()),
             'nonce' => $nonce
         ]);
-    }
-
-    /**
-     * Handle the update of the settings
-     *
-     * @param SettingsGroup $group
-     * @param string $nonce
-     * @return bool
-     */
-    final private function handleUpdate(SettingsGroup $group, string $nonce): bool
-    {
-        if (!check_admin_referer($nonce)) {
-            return false;
-        }
-
-        $request = Request::getInstance();
-        $success = true;
-
-        foreach ($group->getSettings() as $setting) {
-            $fieldValue = $request->getParam($setting->getSlug(), Request::TYPE_POST);
-            if (is_null($fieldValue)) {
-                continue;
-            }
-
-            $fieldError = $setting->validate($fieldValue);
-
-            if (empty($fieldError)) {
-                $setting->setValue($fieldValue);
-            } else {
-                add_settings_error($setting->getTitle(), $setting->getSlug(), $fieldError);
-                $this->errorFieldValues[$setting->getSlug()] = $fieldValue;
-                $success = false;
-            }
-        }
-
-        if ($success) {
-            $group->saveGroup();
-        }
-
-        return $success;
     }
 }
