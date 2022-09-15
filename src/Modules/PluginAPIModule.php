@@ -6,7 +6,7 @@ use Closure;
 use VAF\WP\Library\Exceptions\Module\PluginAPI\InvalidAPIClass;
 use VAF\WP\Library\PluginAPI\AbstractPluginAPI;
 
-final class PluginAPIModule extends AbstractHookModule
+final class PluginAPIModule extends AbstractModule
 {
     /**
      * Returns a callable that is run to configure the module
@@ -49,22 +49,14 @@ final class PluginAPIModule extends AbstractHookModule
         return $this->instance;
     }
 
-    /**
-     * @return array
-     */
-    protected function getHooks(): array
+    public function start(): void
     {
-        return [
-            'vaf-get-plugin' => [
-                self::ARGUMENTS => 2,
-                self::CALLBACK => function (?AbstractPluginAPI $return, string $plugin) {
-                    if ($plugin === $this->getPlugin()->getPluginSlug()) {
-                        $return = $this->getPluginAPI();
-                    }
+        add_action('vaf-get-plugin', function (?AbstractPluginAPI $return, string $plugin): ?AbstractPluginAPI {
+            if ($plugin === $this->getPlugin()->getPluginSlug()) {
+                $return = $this->getPluginAPI();
+            }
 
-                    return $return;
-                }
-            ]
-        ];
+            return $return;
+        }, 10, 2);
     }
 }

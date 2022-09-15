@@ -7,7 +7,7 @@ use VAF\WP\Library\Exceptions\Module\RestAPI\InvalidRouteClass;
 use VAF\WP\Library\RestAPI\Route;
 use WP_REST_Request;
 
-final class RestAPIModule extends AbstractHookModule
+final class RestAPIModule extends AbstractModule
 {
     /**
      * Returns a callable that is run to configure the module
@@ -40,20 +40,6 @@ final class RestAPIModule extends AbstractHookModule
      * @var string Namespace for the Rest API module
      */
     private string $restNamespace = '';
-
-    /**
-     * @return Closure[]
-     */
-    protected function getHooks(): array
-    {
-        return [
-            'rest_api_init' => function () {
-                foreach ($this->routes as $route) {
-                    $this->registerRestRoute($route);
-                }
-            }
-        ];
-    }
 
     private function registerRestRoute(string $classname): void
     {
@@ -118,5 +104,14 @@ final class RestAPIModule extends AbstractHookModule
         }
 
         return $return;
+    }
+
+    public function start(): void
+    {
+        add_action('rest_api_init', function () {
+            foreach ($this->routes as $route) {
+                $this->registerRestRoute($route);
+            }
+        });
     }
 }
