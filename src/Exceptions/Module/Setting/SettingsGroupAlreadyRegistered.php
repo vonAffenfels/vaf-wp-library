@@ -6,14 +6,14 @@ use LogicException;
 use Throwable;
 use VAF\WP\Library\Plugin;
 
-final class SettingAlreadyRegistered extends LogicException
+final class SettingsGroupAlreadyRegistered extends LogicException
 {
-    final public function __construct(Plugin $plugin, string $setting, Throwable $previous = null)
+    final public function __construct(Plugin $plugin, string $group, Throwable $previous = null)
     {
         $message = sprintf(
-            '[Plugin %s] [Module Settings] Setting %s already registered.',
+            '[Plugin %s] [Module Settings] Settingsgroup %s already registered.',
             $plugin->getPluginSlug(),
-            $setting
+            $group
         );
         parent::__construct($message, 0, $previous);
     }

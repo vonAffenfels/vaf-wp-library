@@ -2,7 +2,7 @@
 
 namespace VAF\WP\Library\Modules;
 
-use VAF\WP\Library\AbstractPlugin;
+use VAF\WP\Library\Plugin;
 
 abstract class AbstractModule
 {
@@ -11,9 +11,9 @@ abstract class AbstractModule
      * Plugin functions *
      ********************/
 
-    private AbstractPlugin $plugin;
+    private Plugin $plugin;
 
-    final protected function getPlugin(): AbstractPlugin
+    final protected function getPlugin(): Plugin
     {
         return $this->plugin;
     }
@@ -25,10 +25,10 @@ abstract class AbstractModule
      ***************/
 
     /**
-     * @param AbstractPlugin $plugin
+     * @param Plugin $plugin
      * @param callable|null  $configureFunction
      */
-    final public function __construct(AbstractPlugin $plugin, ?callable $configureFunction)
+    final public function __construct(Plugin $plugin, ?callable $configureFunction)
     {
         $this->plugin = $plugin;
 
