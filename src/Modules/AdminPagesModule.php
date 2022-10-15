@@ -7,7 +7,7 @@ use VAF\WP\Library\AdminPages\AdminPage;
 use VAF\WP\Library\Exceptions\Module\AdminPage\InvalidAdminPageClass;
 use VAF\WP\Library\Exceptions\Module\AdminPage\ParentMenuNotFound;
 
-final class AdminPagesModule extends AbstractHookModule
+final class AdminPagesModule extends AbstractModule
 {
     /**
      * @var array List of all adminpage classes
@@ -38,20 +38,6 @@ final class AdminPagesModule extends AbstractHookModule
                 $module->adminPages[] = $adminPage;
             }
         };
-    }
-
-    /**
-     * Register all hooks needed
-     *
-     * @return Closure[]
-     */
-    final protected function getHooks(): array
-    {
-        return [
-            'admin_menu' => function () {
-                $this->loadPages();
-            }
-        ];
     }
 
     /**
@@ -146,5 +132,12 @@ final class AdminPagesModule extends AbstractHookModule
         });
 
         return !empty($parentMenuArr);
+    }
+
+    final public function start(): void
+    {
+        add_action('admin_menu', function () {
+            $this->loadPages();
+        });
     }
 }

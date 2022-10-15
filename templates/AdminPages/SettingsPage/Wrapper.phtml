@@ -1,7 +1,13 @@
-<div class="wrap">
-    <h1><?php echo $this->title ?></h1>
+<div class="wrap vaf-admin-page">
+    <hr class="wp-header-end">
 
     <?php settings_errors() ?>
+
+    <div class="postbox vaf-postbox admin-headline">
+        <div class="inside">
+            <h1><?php echo $this->title ?></h1>
+        </div>
+    </div>
 
     <form name="form" action="" method="post">
         <?php wp_nonce_field($this->nonce) ?>
@@ -11,13 +17,19 @@
             <p><?php echo $this->description ?></p>
         <?php endif; ?>
 
-        <table class="form-table" role="presentation">
-            <tbody>
-                <?php foreach ($this->settings as $setting) : ?>
-                    <?php echo $setting ?>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <?php foreach ($this->fieldGroups as $fieldGroup) : ?>
+            <?php if ($fieldGroup['isTable']) : ?>
+                <table class="form-table" role="presentation">
+                    <tbody>
+                    <?php foreach ($fieldGroup['fields'] as $field) : ?>
+                        <?php echo $field ?>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else : ?>
+                <?php echo $fieldGroup['content'] ?>
+            <?php endif; ?>
+        <?php endforeach; ?>
 
         <?php submit_button(); ?>
     </form>
