@@ -4,13 +4,13 @@ namespace VAF\WP\Library\Exceptions\Module\Hook;
 
 use LogicException;
 use Throwable;
-use VAF\WP\Library\AbstractPlugin;
+use VAF\WP\Library\Plugin;
 use VAF\WP\Library\Modules\AbstractHookModule;
 
 final class HookInvalidConfiguration extends LogicException
 {
     public function __construct(
-        AbstractPlugin $plugin,
+        Plugin $plugin,
         AbstractHookModule $module,
         string $hook,
         Throwable $previous = null

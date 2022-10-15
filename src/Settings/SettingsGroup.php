@@ -2,7 +2,7 @@
 
 namespace VAF\WP\Library\Settings;
 
-use VAF\WP\Library\AbstractPlugin;
+use VAF\WP\Library\Plugin;
 use VAF\WP\Library\Exceptions\Module\Setting\InvalidSettingsClass;
 use VAF\WP\Library\Exceptions\Module\Setting\SettingsGroupAlreadyRegistered;
 use VAF\WP\Library\Exceptions\Module\Setting\SettingsGroupNotRegistered;
@@ -68,9 +68,9 @@ abstract class SettingsGroup
     private bool $dirty = false;
 
     /**
-     * @var AbstractPlugin Reference to the plugin object where this settingsgroup belongs to
+     * @var Plugin Reference to the plugin object where this settingsgroup belongs to
      */
-    private AbstractPlugin $plugin;
+    private Plugin $plugin;
 
     /**
      * @var SettingsGroup[] List of instances of all registered settingsgroups
@@ -85,11 +85,11 @@ abstract class SettingsGroup
     /**
      * Constructor
      *
-     * @param AbstractPlugin $plugin
+     * @param Plugin $plugin
      * @throws SettingsGroupAlreadyRegistered
      * @throws InvalidSettingsClass
      */
-    final public function __construct(AbstractPlugin $plugin)
+    final public function __construct(Plugin $plugin)
     {
         $classname = get_class($this);
         if (isset(self::$instances[$classname])) {
@@ -148,9 +148,9 @@ abstract class SettingsGroup
     /**
      * Returns the plugin reference associated with the settingsgroup
      *
-     * @return AbstractPlugin
+     * @return Plugin
      */
-    final public function getPlugin(): AbstractPlugin
+    final public function getPlugin(): Plugin
     {
         return $this->plugin;
     }

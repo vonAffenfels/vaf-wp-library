@@ -58,10 +58,10 @@ final class Template
     /**
      * Registers the namespace for a plugin and adds all necessary directories
      *
-     * @param AbstractPlugin $plugin Plugin to register
+     * @param Plugin $plugin Plugin to register
      * @return void
      */
-    final public static function registerPlugin(AbstractPlugin $plugin): void
+    final public static function registerPlugin(Plugin $plugin): void
     {
         // Make sure we are initialized
         self::initialize();
