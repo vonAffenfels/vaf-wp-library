@@ -10,13 +10,13 @@ use Closure;
 use VAF\WP\Library\Exceptions\Module\InvalidModuleClass;
 use VAF\WP\Library\Exceptions\Module\ModuleAlreadyRegistered;
 use VAF\WP\Library\Exceptions\Module\ModuleNotRegistered;
-use VAF\WP\Library\Exceptions\Plugin\PluginAlreadyConfigured;
-use VAF\WP\Library\Exceptions\Plugin\PluginNotConfigured;
+use VAF\WP\Library\Exceptions\Plugin\InvalidPluginClass;
+use VAF\WP\Library\Exceptions\Plugin\PluginAlreadyRegistered;
 use VAF\WP\Library\Modules\AbstractModule;
 use VAF\WP\Library\Modules\PluginAPIModule;
 use VAF\WP\Library\PluginAPI\AbstractPluginAPI;
 
-abstract class AbstractPlugin
+abstract class Plugin
 {
     //<editor-fold defaultstate="collapsed" desc="Singleton handling">
     /***********************
@@ -24,58 +24,15 @@ abstract class AbstractPlugin
      ***********************/
 
     /**
-     * @var AbstractPlugin[] All registered plugin instances
+     * @var Plugin[] All registered plugin instances
      */
     private static array $instances = [];
 
     /**
-     * Starts the plugin and creates a new instance
-     *
-     * @return static
-     */
-    final public static function getInstance(): self
-    {
-        if (is_null(self::$instances[static::class] ?? null)) {
-            self::$instances[static::class] = new static();
-        }
-
-        return self::$instances[static::class];
-    }
-
-    /**
      * Private constructor so a plugin object can only be created once
      */
-    final private function __construct()
+    final private function __construct(string $pluginFile)
     {
-        // Init plugin slug with something known to have something
-        // to display on exceptions before configuration happens
-        $this->pluginSlug = static::class;
-    }
-    //</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="Instance handling">
-    /*********************
-     * Instance handling *
-     *********************/
-
-    /**
-     * @var bool Determines if the plugin is already configured
-     */
-    private bool $isConfigured = false;
-
-    /**
-     * Configures the plugin to a state it is bootable
-     *
-     * @return $this
-     */
-    final public function configure(string $pluginFile): self
-    {
-        if ($this->isConfigured) {
-            // Plugin is already configured!
-            // Function should not be called twice
-            throw new PluginAlreadyConfigured($this);
-        }
-
         $this->pluginFile = $pluginFile;
         $this->pluginSlug = basename(dirname($pluginFile));
         $this->pluginDirectory = trailingslashit(dirname($pluginFile));
@@ -83,36 +40,28 @@ abstract class AbstractPlugin
         Template::registerPlugin($this);
 
         $this->configurePlugin();
-
-        $this->isConfigured = true;
-
-        return $this;
+        $this->startModules();
     }
 
     /**
-     * Starts the plugin and initialises all modules and stuff
+     * Registers a plugin and creates a new instance
      *
-     * @return $this
+     * @param string $class
+     * @param string $pluginFile
+     * @return void
      */
-    final public function start(): self
+    final public static function registerPlugin(string $class, string $pluginFile): void
     {
-        if (!$this->isConfigured) {
-            // Plugin is not configured!
-            // Function should be called after configure()
-            throw new PluginNotConfigured($this);
+        if (isset(self::$instances[$class])) {
+            throw new PluginAlreadyRegistered($class);
         }
 
-        $this->startModules();
+        if (!is_subclass_of($class, Plugin::class)) {
+            throw new InvalidPluginClass($class);
+        }
 
-        return $this;
+        self::$instances[$class] = new $class($pluginFile);
     }
-
-    /**
-     * Abstract function to configure additional stuff like modules
-     *
-     * @return $this
-     */
-    abstract protected function configurePlugin(): self;
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Plugin Details">
@@ -164,6 +113,13 @@ abstract class AbstractPlugin
     {
         return $this->pluginDirectory;
     }
+
+    /**
+     * Abstract function to configure additional stuff like modules
+     *
+     * @return $this
+     */
+    abstract protected function configurePlugin(): self;
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Module handling">
@@ -198,11 +154,6 @@ abstract class AbstractPlugin
      */
     final protected function registerModule(string $moduleClass, ?Closure $configureFunction = null): self
     {
-        if ($this->isConfigured) {
-            // Plugin is already configured
-            throw new PluginAlreadyConfigured($this);
-        }
-
         if (!is_subclass_of($moduleClass, AbstractModule::class)) {
             // Modules need to extend AbstractModule class
             throw new InvalidModuleClass($this, $moduleClass);

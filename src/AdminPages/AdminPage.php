@@ -6,7 +6,7 @@
 
 namespace VAF\WP\Library\AdminPages;
 
-use VAF\WP\Library\AbstractPlugin;
+use VAF\WP\Library\Plugin;
 
 /**
  * Base class for every page on the admin backend
@@ -14,16 +14,16 @@ use VAF\WP\Library\AbstractPlugin;
 abstract class AdminPage
 {
     /**
-     * @var AbstractPlugin Reference to the plugin object
+     * @var Plugin Reference to the plugin object
      */
-    private AbstractPlugin $plugin;
+    private Plugin $plugin;
 
     /**
      * Constructor
      *
-     * @param AbstractPlugin $plugin
+     * @param Plugin $plugin
      */
-    final public function __construct(AbstractPlugin $plugin)
+    final public function __construct(Plugin $plugin)
     {
         $this->plugin = $plugin;
     }
@@ -31,9 +31,9 @@ abstract class AdminPage
     /**
      * Internal function to get the plugin object
      *
-     * @return AbstractPlugin
+     * @return Plugin
      */
-    final protected function getPlugin(): AbstractPlugin
+    final protected function getPlugin(): Plugin
     {
         return $this->plugin;
     }
