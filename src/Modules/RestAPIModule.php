@@ -80,7 +80,7 @@ final class RestAPIModule extends AbstractHookModule
      * @param  Route $route
      * @return array
      */
-    final private function getArguments(Route $route): array
+    private function getArguments(Route $route): array
     {
         $arguments = $route->getArguments();
         $return = [];

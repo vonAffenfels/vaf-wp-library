@@ -39,7 +39,7 @@ final class Template
      *
      * @return void
      */
-    final private static function initialize(): void
+    private static function initialize(): void
     {
         // Do nothing if already initialized
         if (self::$initialized) {

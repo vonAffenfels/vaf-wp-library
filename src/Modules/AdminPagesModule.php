@@ -57,7 +57,7 @@ final class AdminPagesModule extends AbstractHookModule
     /**
      * @return void
      */
-    final private function loadPages(): void
+    private function loadPages(): void
     {
         foreach ($this->adminPages as $class) {
             $adminPageObj = new $class($this->getPlugin());
@@ -70,7 +70,7 @@ final class AdminPagesModule extends AbstractHookModule
      * @param  AdminPage $page
      * @return void
      */
-    final private function registerMenuItem(AdminPage $page): void
+    private function registerMenuItem(AdminPage $page): void
     {
         $menuItem = $page->getMenu();
         $menuItem->lockObject();
@@ -137,7 +137,7 @@ final class AdminPagesModule extends AbstractHookModule
      * @param string $slug
      * @return bool
      */
-    final private function hasParentMenu(string $slug): bool
+    private function hasParentMenu(string $slug): bool
     {
         global $menu;
 

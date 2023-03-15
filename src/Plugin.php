@@ -31,7 +31,7 @@ abstract class Plugin
     /**
      * Private constructor so a plugin object can only be created once
      */
-    final private function __construct(string $pluginFile)
+    private function __construct(string $pluginFile)
     {
         $this->pluginFile = $pluginFile;
         $this->pluginSlug = basename(dirname($pluginFile));
@@ -137,7 +137,7 @@ abstract class Plugin
      *
      * @return void
      */
-    final private function startModules(): void
+    private function startModules(): void
     {
         foreach ($this->modules as $module) {
             $module->start();
