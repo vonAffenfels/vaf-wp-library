@@ -125,7 +125,7 @@ abstract class SettingsGroup
      * @param string $slug
      * @return AbstractSetting
      */
-    final private function getSetting(string $slug): AbstractSetting
+    private function getSetting(string $slug): AbstractSetting
     {
         return $this->settings[$slug];
     }
@@ -160,7 +160,7 @@ abstract class SettingsGroup
      *
      * @return void
      */
-    final private function loadValues(): void
+    private function loadValues(): void
     {
         if ($this->loaded) {
             return;
@@ -178,7 +178,7 @@ abstract class SettingsGroup
      *
      * @return bool
      */
-    final private function isLoaded(): bool
+    private function isLoaded(): bool
     {
         return $this->loaded;
     }

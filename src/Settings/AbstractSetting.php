@@ -71,7 +71,7 @@ abstract class AbstractSetting
     /**
      * @return AbstractSetting
      */
-    final private static function getInstance(): AbstractSetting
+    private static function getInstance(): AbstractSetting
     {
         $classname = static::class;
         if (!isset(self::$instances[$classname])) {
@@ -102,7 +102,7 @@ abstract class AbstractSetting
         $instance->group->setValue($instance->getSlug(), $value);
     }
 
-    final private function loadValue()
+    private function loadValue()
     {
         $value = $this->group->getValue($this->getSlug());
 

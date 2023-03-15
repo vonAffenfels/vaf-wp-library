@@ -45,7 +45,7 @@ abstract class AbstractPlugin
     /**
      * Private constructor so a plugin object can only be created once
      */
-    final private function __construct()
+    private function __construct()
     {
         // Init plugin slug with something known to have something
         // to display on exceptions before configuration happens
@@ -181,7 +181,7 @@ abstract class AbstractPlugin
      *
      * @return void
      */
-    final private function startModules(): void
+    private function startModules(): void
     {
         foreach ($this->modules as $module) {
             $module->start();

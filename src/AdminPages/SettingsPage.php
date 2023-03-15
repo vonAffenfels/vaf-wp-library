@@ -60,7 +60,7 @@ abstract class SettingsPage extends AdminPage
      * @param string $nonce
      * @return bool
      */
-    final private function handleUpdate(SettingsGroup $group, string $nonce): bool
+    private function handleUpdate(SettingsGroup $group, string $nonce): bool
     {
         if (!check_admin_referer($nonce)) {
             return false;

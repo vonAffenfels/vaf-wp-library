@@ -50,7 +50,7 @@ final class ShortcodesModule extends AbstractModule
      * @param  string $classname
      * @return void
      */
-    final private function registerShortcode(string $classname): void
+    private function registerShortcode(string $classname): void
     {
         /** @var Shortcode $shortcode */
         $shortcode = new $classname();

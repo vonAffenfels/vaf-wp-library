@@ -43,7 +43,7 @@ final class Request
     /**
      * Constructor
      */
-    final private function __construct()
+    private function __construct()
     {
         $this->get = $_GET;
         $this->post = $_POST;
