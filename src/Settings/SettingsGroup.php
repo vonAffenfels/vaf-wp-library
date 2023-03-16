@@ -2,7 +2,7 @@
 
 namespace VAF\WP\Library\Settings;
 
-use VAF\WP\Library\AbstractPlugin;
+use VAF\WP\Library\Plugin;
 use VAF\WP\Library\Exceptions\Module\Setting\InvalidSettingsClass;
 
 abstract class SettingsGroup
@@ -19,9 +19,9 @@ abstract class SettingsGroup
 
     private bool $loaded = false;
 
-    private AbstractPlugin $plugin;
+    private Plugin $plugin;
 
-    final public function __construct(AbstractPlugin $plugin)
+    final public function __construct(Plugin $plugin)
     {
         $this->plugin = $plugin;
 

@@ -19,7 +19,7 @@ abstract class EnvAwareTextSetting extends TextSetting
         return $this->fromEnv;
     }
 
-    protected function deserialize($value)
+    protected function deserialize($value): string
     {
         if (!empty($this->getEnvKey())) {
             $env = $this->getEnvValue();

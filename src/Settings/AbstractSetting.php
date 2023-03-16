@@ -2,7 +2,7 @@
 
 namespace VAF\WP\Library\Settings;
 
-use VAF\WP\Library\AbstractPlugin;
+use VAF\WP\Library\Plugin;
 use VAF\WP\Library\Exceptions\Module\Setting\SettingAlreadyRegistered;
 use VAF\WP\Library\Exceptions\Module\Setting\SettingNotRegistered;
 
@@ -31,7 +31,7 @@ abstract class AbstractSetting
 
     private SettingsGroup $group;
 
-    private AbstractPlugin $plugin;
+    private Plugin $plugin;
 
     /**
      * @var mixed
@@ -40,7 +40,7 @@ abstract class AbstractSetting
 
     private bool $loaded = false;
 
-    final public function __construct(SettingsGroup $group, AbstractPlugin $plugin)
+    final public function __construct(SettingsGroup $group, Plugin $plugin)
     {
         $this->group = $group;
         $this->plugin = $plugin;
