@@ -8,6 +8,7 @@ namespace VAF\WP\Library;
 
 use Closure;
 use InvalidArgumentException;
+use VAF\WP\Library\Exceptions\Template\EngineAlreadyRegistered;
 use VAF\WP\Library\Exceptions\Template\NamespaceNotRegistered;
 use VAF\WP\Library\Exceptions\Template\TemplateNotFound;
 use VAF\WP\Library\Templates\AbstractTemplate;
@@ -53,6 +54,22 @@ final class Template
         ];
 
         self::$initialized = true;
+    }
+
+    /**
+     * Registers a new rendering engine
+     *
+     * @param string $engineClass
+     * @param string $extension
+     * @return void
+     */
+    final public static function registerTemplateEngine(string $engineClass, string $extension)
+    {
+        if (isset(self::$engines[$extension])) {
+            throw new EngineAlreadyRegistered($extension);
+        }
+
+        self::$engines[$extension] = $engineClass;
     }
 
     /**
