@@ -87,9 +87,9 @@ abstract class Route
         try {
             $data = $this->handle($request);
             if (!is_null($data)) {
-                $return = array_merge($data, [
+                $return = array_merge([
                     'success' => true
-                ]);
+                ], $data);
             }
         } catch (Exception $e) {
             $return['success'] = false;
