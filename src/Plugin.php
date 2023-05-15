@@ -118,7 +118,7 @@ abstract class Plugin
 
     private function getBuildDir(): string
     {
-        return $this->pluginPath . 'var/cache';
+        return $this->pluginPath . 'container_cache';
     }
 
     /**
