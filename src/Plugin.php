@@ -38,12 +38,31 @@ abstract class Plugin
         $instance->boot();
     }
 
+    /**
+     * @noinspection PhpSameParameterValueInspection
+     */
     final private function __construct(
         private readonly string $pluginName,
         private readonly string $pluginPath,
         private readonly string $pluginUrl,
         private readonly bool $debug = false
     ) {
+    }
+
+    /**
+     * @noinspection PhpUnused
+     */
+    public function getPluginName(): string
+    {
+        return $this->pluginName;
+    }
+
+    /**
+     * @noinspection PhpUnused
+     */
+    public function getPluginUrl(): string
+    {
+        return $this->pluginUrl;
     }
 
     /**
