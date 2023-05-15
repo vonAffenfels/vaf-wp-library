@@ -1,7 +1,7 @@
 {
   "name": "vonaffenfels/vaf-wp-library",
   "type": "project",
-  "description": "Library to simplify plugin and theme development",
+  "description": "Library to simplify plugin development",
   "homepage": "https://github.com/vonAffenfels/vaf-wp-library",
   "authors": [
     {
@@ -25,7 +25,7 @@
     "optimize-autoloader": true,
     "preferred-install": "dist",
     "platform": {
-      "php": "7.4"
+      "php": "8.2"
     },
     "sort-packages": true
   },
@@ -42,7 +42,8 @@
     ]
   },
   "require": {
-    "php": ">=7.4"
+    "php": ">=8.2",
+    "symfony/dependency-injection": "^6.2"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.6"
