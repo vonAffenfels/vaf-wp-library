@@ -13,22 +13,9 @@ use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\Filesystem\Filesystem;
 use Throwable;
 
-use function dirname;
-use function get_class;
-use function is_object;
-
-use const DIRECTORY_SEPARATOR;
-use const E_ALL;
-use const E_WARNING;
-use const GLOB_NOSORT;
-use const LOCK_EX;
-use const LOCK_NB;
-use const LOCK_SH;
-use const LOCK_UN;
-
 abstract class Plugin
 {
-    private ?Container $container;
+    private ?Container $container = null;
 
     private bool $booted = false;
 
