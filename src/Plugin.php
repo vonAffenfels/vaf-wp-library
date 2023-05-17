@@ -37,7 +37,7 @@ abstract class Plugin
         private readonly string $pluginUrl,
         private readonly bool $debug = false
     ) {
-        $this->kernel = new PluginKernel($this->getPluginPath(), $this->debug);
+        $this->kernel = new PluginKernel($this->getPluginPath(), $this->debug, $this);
         $this->kernel->boot();
     }
 

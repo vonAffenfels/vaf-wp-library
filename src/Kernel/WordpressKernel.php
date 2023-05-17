@@ -5,6 +5,7 @@ namespace VAF\WP\Library\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use VAF\WP\Library\Plugin;
 
 abstract class WordpressKernel extends AbstractKernel
 {

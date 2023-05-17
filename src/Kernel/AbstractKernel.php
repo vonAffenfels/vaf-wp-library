@@ -123,11 +123,9 @@ abstract class AbstractKernel
 
             if (!$container->hasDefinition('kernel')) {
                 $container->register('kernel', $kernelClass)
-                    ->addTag('controller.service_arguments')
                     ->setAutoconfigured(true)
                     ->setSynthetic(true)
-                    ->setPublic(true)
-                ;
+                    ->setPublic(true);
             }
 
             $container->addObjectResource($this);
