@@ -10,6 +10,9 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use VAF\WP\Library\Hook\Attribute\AsHookContainer;
 use VAF\WP\Library\Hook\Loader as HookLoader;
 use VAF\WP\Library\Hook\LoaderCompilerPass as HookLoaderCompilerPass;
+use VAF\WP\Library\Shortcode\Attribute\AsShortcodeContainer;
+use VAF\WP\Library\Shortcode\Loader as ShortcodeLoader;
+use VAF\WP\Library\Shortcode\LoaderCompilerPass as ShortcodeLoaderCompilerPass;
 
 abstract class WordpressKernel extends Kernel
 {
@@ -18,6 +21,10 @@ abstract class WordpressKernel extends Kernel
         /** @var HookLoader $hookLoader */
         $hookLoader = $this->getContainer()->get('hook.loader');
         $hookLoader->registerHooks();
+
+        /** @var ShortcodeLoader $shortcodeLoader */
+        $shortcodeLoader = $this->getContainer()->get('shortcode.loader');
+        $shortcodeLoader->registerShortcodes();
     }
 
     /**
@@ -45,6 +52,7 @@ abstract class WordpressKernel extends Kernel
         }
 
         $this->registerHookContainer($builder);
+        $this->registerShortcodeContainer($builder);
     }
 
     /**
@@ -53,6 +61,26 @@ abstract class WordpressKernel extends Kernel
     private function getConfigDir(): string
     {
         return $this->getProjectDir() . '/config';
+    }
+
+    private function registerShortcodeContainer(ContainerBuilder $builder): void
+    {
+        $builder->register('shortcode.loader', ShortcodeLoader::class)
+            ->setPublic(true)
+            ->setAutowired(true);
+
+        $builder->addCompilerPass(new ShortcodeLoaderCompilerPass());
+
+        $builder->registerAttributeForAutoconfiguration(
+            AsShortcodeContainer::class,
+            static function (
+                ChildDefinition $defintion,
+                AsShortcodeContainer $attribute,
+                ReflectionClass $reflector
+            ): void {
+                $defintion->addTag('shortcode.container');
+            }
+        );
     }
 
     private function registerHookContainer(ContainerBuilder $builder): void

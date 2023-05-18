@@ -14,6 +14,13 @@ class PluginKernel extends WordpressKernel
         parent::__construct($projectDir, $debug);
     }
 
+    protected function bootHandler(): void
+    {
+        parent::bootHandler();
+
+        $this->getContainer()->set('plugin', $this);
+    }
+
     protected function configureContainer(
         ContainerConfigurator $container,
         LoaderInterface $loader,
