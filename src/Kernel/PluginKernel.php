@@ -31,6 +31,4 @@ class PluginKernel extends WordpressKernel
         $builder->addObjectResource($this->plugin);
         $builder->setAlias($this->plugin::class, 'plugin')->setPublic(true);
     }
-
-
 }

@@ -38,7 +38,7 @@ use Throwable;
 /**
  * The Kernel is the heart of the library system.
  */
-abstract class AbstractKernel
+abstract class Kernel
 {
     protected ?Container $container = null;
 
@@ -65,7 +65,13 @@ abstract class AbstractKernel
             $this->initializeContainer();
         }
 
+        $this->bootHandler();
+
         $this->booted = true;
+    }
+
+    protected function bootHandler(): void
+    {
     }
 
     public function isDebug(): bool
@@ -98,13 +104,6 @@ abstract class AbstractKernel
     public function getCharset(): string
     {
         return 'UTF-8';
-    }
-
-    /**
-     * Use this method to register compiler passes and manipulate the container during the building process.
-     */
-    protected function build(ContainerBuilder $container)
-    {
     }
 
     abstract protected function configureContainer(
@@ -159,6 +158,13 @@ abstract class AbstractKernel
                 $instanceof = [];
                 $kernelLoader->registerAliasesForSinglyImplementedInterfaces();
                 AbstractConfigurator::$valuePreProcessor = $valuePreProcessor;
+            }
+
+            // Register all parent classes of kernel as aliases
+            foreach (class_parents($this) as $parent) {
+                if (!$container->hasAlias($parent)) {
+                    $container->setAlias($parent, 'kernel');
+                }
             }
 
             $container->setAlias($kernelClass, 'kernel')->setPublic(true);
@@ -316,7 +322,6 @@ abstract class AbstractKernel
 
         $container = $this->getContainerBuilder();
         $container->addObjectResource($this);
-        $this->build($container);
         $this->registerContainerConfiguration($this->getContainerLoader($container));
 
         return $container;

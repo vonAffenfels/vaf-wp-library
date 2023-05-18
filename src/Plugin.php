@@ -4,12 +4,12 @@ namespace VAF\WP\Library;
 
 use Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use VAF\WP\Library\Kernel\AbstractKernel;
+use VAF\WP\Library\Kernel\Kernel;
 use VAF\WP\Library\Kernel\PluginKernel;
 
 abstract class Plugin
 {
-    private AbstractKernel $kernel;
+    private Kernel $kernel;
 
     /**
      * Registers a plugin and boots it

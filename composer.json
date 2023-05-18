@@ -25,7 +25,7 @@
     "optimize-autoloader": true,
     "preferred-install": "dist",
     "platform": {
-      "php": "8.2"
+      "php": "8.1"
     },
     "sort-packages": true
   },
@@ -42,7 +42,7 @@
     ]
   },
   "require": {
-    "php": ">=8.2",
+    "php": ">=8.1",
     "symfony/config": "^6.2",
     "symfony/dependency-injection": "^6.2",
     "symfony/yaml": "^6.2"
