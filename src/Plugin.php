@@ -39,6 +39,19 @@ abstract class Plugin
     ) {
         $this->kernel = new PluginKernel($this->getPluginPath(), $this->debug, $this);
         $this->kernel->boot();
+
+        $this->registerPluginApi();
+    }
+
+    private function registerPluginApi(): void
+    {
+        add_action('vaf-get-plugin', function (Plugin $return, string $plugin) {
+            if ($plugin == $this->pluginName) {
+                $return = $this;
+            }
+
+            return $return;
+        }, 10, 2);
     }
 
     public function getPluginPath(): string
