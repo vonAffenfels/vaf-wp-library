@@ -16,9 +16,9 @@ class PluginKernel extends WordpressKernel
 
     protected function bootHandler(): void
     {
-        parent::bootHandler();
-
         $this->getContainer()->set('plugin', $this->plugin);
+
+        parent::bootHandler();
     }
 
     protected function configureContainer(
