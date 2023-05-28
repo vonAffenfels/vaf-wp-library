@@ -31,6 +31,21 @@ final class Loader
 
                         $passedParameters = [];
                         foreach ($attributes as $key => $value) {
+                            # Handle type
+                            switch ($data['paramTypes'][$key]) {
+                                case 'int':
+                                    $value = (int)$value;
+                                    break;
+
+                                case 'bool':
+                                    $value = in_array(strtolower($value), ['1', 'on', 'true']);
+                                    break;
+
+                                case 'string':
+                                default:
+                                    # Nothing to do as $value is already a string
+                                    break;
+                            }
                             $passedParameters[$data['paramsLower'][$key]] = $value;
                         }
 

@@ -59,6 +59,7 @@ final class LoaderCompilerPass implements CompilerPassInterface
 
             $params = [];
             $paramsLower = [];
+            $paramTypes = [];
             $serviceParams = [];
 
             foreach ($method->getParameters() as $parameter) {
@@ -103,9 +104,11 @@ final class LoaderCompilerPass implements CompilerPassInterface
                     }
 
                     $name = $parameter->getName();
+                    $lowerName = strtolower($name);
 
-                    $params[strtolower($name)] = $parameter->getDefaultValue();
-                    $paramsLower[strtolower($name)] = $name;
+                    $params[$lowerName] = $parameter->getDefaultValue();
+                    $paramsLower[$lowerName] = $name;
+                    $paramTypes[$lowerName] = $type->getName();
                 } else {
                     $serviceParams[$parameter->getName()] = $type->getName();
                 }
@@ -115,6 +118,7 @@ final class LoaderCompilerPass implements CompilerPassInterface
                 'method' => $methodName,
                 'params' => $params,
                 'paramsLower' => $paramsLower,
+                'paramTypes' => $paramTypes,
                 'serviceParams' => $serviceParams
             ];
         }
