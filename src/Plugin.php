@@ -31,7 +31,7 @@ abstract class Plugin
     /**
      * @throws Exception
      */
-    final private function __construct(
+    private function __construct(
         private readonly string $pluginName,
         private readonly string $pluginPath,
         private readonly string $pluginUrl,
@@ -54,22 +54,22 @@ abstract class Plugin
         }, 10, 2);
     }
 
-    public function getPluginPath(): string
+    final public function getPluginPath(): string
     {
         return $this->pluginPath;
     }
 
-    public function getPluginName(): string
+    final public function getPluginName(): string
     {
         return $this->pluginName;
     }
 
-    public function getPluginUrl(): string
+    final public function getPluginUrl(): string
     {
         return $this->pluginUrl;
     }
 
-    public function getContainer(): ContainerInterface
+    final public function getContainer(): ContainerInterface
     {
         return $this->kernel->getContainer();
     }
