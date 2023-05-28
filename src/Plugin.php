@@ -45,8 +45,8 @@ abstract class Plugin
 
     private function registerPluginApi(): void
     {
-        add_action('vaf-get-plugin', function (Plugin $return, string $plugin) {
-            if ($plugin == $this->pluginName) {
+        add_action('vaf-get-plugin', function (?Plugin $return, string $plugin): ?Plugin {
+            if ($plugin === $this->pluginName) {
                 $return = $this;
             }
 
