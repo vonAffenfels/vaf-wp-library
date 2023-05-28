@@ -5,7 +5,7 @@ namespace VAF\WP\Library\Hook;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class LoaderCompilerPass implements CompilerPassInterface
+final class LoaderCompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {

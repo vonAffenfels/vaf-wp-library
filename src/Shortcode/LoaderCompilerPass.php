@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use VAF\WP\Library\Shortcode\Attribute\Shortcode;
 
-class LoaderCompilerPass implements CompilerPassInterface
+final class LoaderCompilerPass implements CompilerPassInterface
 {
     private array $allowedTypes = ['int', 'string', 'bool'];
 
