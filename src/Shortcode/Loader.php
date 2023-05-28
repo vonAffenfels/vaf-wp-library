@@ -3,11 +3,11 @@
 namespace VAF\WP\Library\Shortcode;
 
 use Exception;
-use VAF\WP\Library\Kernel\Kernel;
+use VAF\WP\Library\Kernel\WordpressKernel;
 
 final class Loader
 {
-    public function __construct(private readonly Kernel $kernel, private readonly array $shortcodeClasses)
+    public function __construct(private readonly WordpressKernel $kernel, private readonly array $shortcodeClasses)
     {
     }
 
