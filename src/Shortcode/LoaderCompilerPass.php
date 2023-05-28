@@ -110,6 +110,7 @@ final class LoaderCompilerPass implements CompilerPassInterface
                     $paramsLower[$lowerName] = $name;
                     $paramTypes[$lowerName] = $type->getName();
                 } else {
+                    $container->findDefinition($type->getName())->setPublic(true);
                     $serviceParams[$parameter->getName()] = $type->getName();
                 }
             }

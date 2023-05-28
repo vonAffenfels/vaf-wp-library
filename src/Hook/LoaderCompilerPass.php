@@ -58,6 +58,8 @@ final class LoaderCompilerPass implements CompilerPassInterface
 
                     $numParameters--;
                     $serviceParams[$paramIdx] = $type->getName();
+
+                    $container->findDefinition($type->getName())->setPublic(true);
                 }
             }
 
