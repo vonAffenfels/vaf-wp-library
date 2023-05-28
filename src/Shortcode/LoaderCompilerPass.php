@@ -28,13 +28,13 @@ final class LoaderCompilerPass implements CompilerPassInterface
 
         $shortcodeContainerServices = $container->findTaggedServiceIds('shortcode.container');
 
-        $shortcodeContainerClasses = [];
+        $shortcodeContainerData = [];
         foreach ($shortcodeContainerServices as $id => $tags) {
             $definition = $container->findDefinition($id);
             $definition->setPublic(true);
-            $shortcodeContainerClasses[$id] = $this->getShortcodeContainerData($definition->getClass(), $container);
+            $shortcodeContainerData[$id] = $this->getShortcodeContainerData($definition->getClass(), $container);
         }
-        $loaderDefinition->setArgument('$shortcodeContainer', $shortcodeContainerClasses);
+        $loaderDefinition->setArgument('$shortcodeContainer', $shortcodeContainerData);
     }
 
     /**
