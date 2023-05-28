@@ -23,6 +23,6 @@ final class LoaderCompilerPass implements CompilerPassInterface
             $definition->setPublic(true);
             $hookContainerClasses[$id] = $definition->getClass();
         }
-        $loaderDefinition->setArgument('$hookClasses', $hookContainerClasses);
+        $loaderDefinition->setArgument('$hookContainer', $hookContainerClasses);
     }
 }

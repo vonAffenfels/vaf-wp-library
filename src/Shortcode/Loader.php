@@ -7,7 +7,7 @@ use VAF\WP\Library\Kernel\WordpressKernel;
 
 final class Loader
 {
-    public function __construct(private readonly WordpressKernel $kernel, private readonly array $shortcodeClasses)
+    public function __construct(private readonly WordpressKernel $kernel, private readonly array $shortcodeContainer)
     {
     }
 
@@ -16,7 +16,7 @@ final class Loader
      */
     public function registerShortcodes(): void
     {
-        foreach ($this->shortcodeClasses as $serviceId => $shortcodeContainer) {
+        foreach ($this->shortcodeContainer as $serviceId => $shortcodeContainer) {
             foreach ($shortcodeContainer as $shortcode => $data) {
                 add_shortcode(
                     $shortcode,

@@ -34,7 +34,7 @@ final class LoaderCompilerPass implements CompilerPassInterface
             $definition->setPublic(true);
             $shortcodeContainerClasses[$id] = $this->getShortcodeContainerData($definition->getClass(), $container);
         }
-        $loaderDefinition->setArgument('$shortcodeClasses', $shortcodeContainerClasses);
+        $loaderDefinition->setArgument('$shortcodeContainer', $shortcodeContainerClasses);
     }
 
     /**

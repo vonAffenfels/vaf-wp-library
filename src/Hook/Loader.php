@@ -9,13 +9,13 @@ use VAF\WP\Library\Kernel\WordpressKernel;
 
 final class Loader
 {
-    public function __construct(private readonly WordpressKernel $kernel, private readonly array $hookClasses)
+    public function __construct(private readonly WordpressKernel $kernel, private readonly array $hookContainer)
     {
     }
 
     public function registerHooks(): void
     {
-        foreach ($this->hookClasses as $serviceId => $hookClass) {
+        foreach ($this->hookContainer as $serviceId => $hookClass) {
             $reflection = new ReflectionClass($hookClass);
             foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                 $numParameters = $method->getNumberOfParameters();
