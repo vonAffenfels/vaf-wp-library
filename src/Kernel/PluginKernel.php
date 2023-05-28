@@ -26,7 +26,7 @@ class PluginKernel extends WordpressKernel
         LoaderInterface $loader,
         ContainerBuilder $builder
     ): void {
-        if (!$builder->hasDefinition($this->plugin::class)) {
+        if (!$builder->hasDefinition('plugin')) {
             $builder->register('plugin', $this->plugin::class)
                 ->setAutoconfigured(true)
                 ->setSynthetic(true)
@@ -35,6 +35,13 @@ class PluginKernel extends WordpressKernel
 
         $builder->addObjectResource($this->plugin);
         $builder->setAlias($this->plugin::class, 'plugin')->setPublic(true);
+
+        // Register all parent classes of plugin as aliases
+        foreach (class_parents($this->plugin) as $parent) {
+            if (!$builder->hasAlias($parent)) {
+                $builder->setAlias($parent, 'plugin');
+            }
+        }
 
         parent::configureContainer($container, $loader, $builder);
     }

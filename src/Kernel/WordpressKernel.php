@@ -2,6 +2,7 @@
 
 namespace VAF\WP\Library\Kernel;
 
+use Exception;
 use ReflectionClass;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ChildDefinition;

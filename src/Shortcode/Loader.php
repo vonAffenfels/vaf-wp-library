@@ -2,7 +2,6 @@
 
 namespace VAF\WP\Library\Shortcode;
 
-use Exception;
 use VAF\WP\Library\Kernel\WordpressKernel;
 
 final class Loader
@@ -11,9 +10,6 @@ final class Loader
     {
     }
 
-    /**
-     * @throws Exception
-     */
     public function registerShortcodes(): void
     {
         foreach ($this->shortcodeContainer as $serviceId => $shortcodeContainer) {
