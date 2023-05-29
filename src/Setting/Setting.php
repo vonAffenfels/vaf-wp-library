@@ -12,7 +12,6 @@ abstract class Setting
 
     public function __construct(private readonly BaseWordpress $base)
     {
-        add_option($this->getOptionName(), $this->getDefaultValue());
     }
 
     private function getOptionName(): string
@@ -20,22 +19,20 @@ abstract class Setting
         return $this->base->getName() . '_' . $this->getSettingName();
     }
 
-    protected function get(): mixed
+    protected function get(?string $key = null)
     {
         if (!$this->loaded) {
-            $this->value = get_option($this->getOptionName(), $this->getDefaultValue());
+            $this->value = get_option($this->getOptionName(), null);
             $this->loaded = true;
         }
 
-        return $this->value;
+        return is_null($key) ? $this->value : $this->value[$key];
     }
 
-    final protected function isLoaded(): bool
+    final public function __invoke()
     {
-        return $this->isLoaded();
+        return $this->get();
     }
 
     abstract protected function getSettingName(): string;
-
-    abstract protected function getDefaultValue(): mixed;
 }
