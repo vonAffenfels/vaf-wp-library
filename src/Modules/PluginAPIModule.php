@@ -57,7 +57,7 @@ final class PluginAPIModule extends AbstractHookModule
         return [
             'vaf-get-plugin' => [
                 self::ARGUMENTS => 2,
-                self::CALLBACK => function (?AbstractPluginAPI $return, string $plugin) {
+                self::CALLBACK => function ($return, string $plugin) {
                     if ($plugin === $this->getPlugin()->getPluginSlug()) {
                         $return = $this->getPluginAPI();
                     }
