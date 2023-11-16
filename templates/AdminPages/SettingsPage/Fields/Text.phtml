@@ -1,7 +1,7 @@
 <input
     name="<?php echo $this->slug ?>"
     id="<?php echo $this->slug ?>"
-    type="text"
+    type="<?php echo $this->type ?>"
     value="<?php echo $this->value ?>"
     class="regular-text"
     <?php if ($this->readonly) : ?>readonly="readonly"<?php endif; ?>

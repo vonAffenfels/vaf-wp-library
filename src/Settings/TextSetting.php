@@ -6,6 +6,11 @@ use VAF\WP\Library\Template;
 
 abstract class TextSetting extends AbstractSetting
 {
+    protected function getInputType(): string
+    {
+        return 'text';
+    }
+
     protected function deserialize($value)
     {
         return $value;
@@ -33,7 +38,8 @@ abstract class TextSetting extends AbstractSetting
     {
         return Template::render('VafWpLibrary/AdminPages/SettingsPage/Fields/Text', [
             'slug' => $this->getSlug(),
-            'value' => $displayValue ?? $this->getValue()
+            'value' => $displayValue ?? $this->getValue(),
+            'type' => $this->getInputType()
         ]);
     }
 }
